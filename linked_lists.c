@@ -1,5 +1,7 @@
 /* Put header info here, includes, etc. */
-
+#include <string.h>
+#include <assert.h>
+#include <stdio.h>
 
 /* 
    a and b are pointers to char (cast into pointers to void)
@@ -7,14 +9,9 @@
    TODO: Use assert (assert.c)
    TODO: use stuff from string.c
 */
-int cmp_string (const void *a, const void *b);
-
-
-int cmp_string_test () {
-  cmp_string ("eecs", "eecs");	/* should return 0 */
-  cmp_string ("eecs", "EECS"); 	/* should return non-zero */
-  cmp_string ("eecs", "eec"); 	/* non-zero */
-  cmp_string ("eecs", NULL); 	/* Error handling */
+int cmp_string (const void *a, const void *b) {
+  int c = strcmp ((char *) a,(char *) b);
+  printf ("%d\n",c);
 }
 
 
@@ -24,7 +21,7 @@ typedef struct {
 } list_entry_t;
 
 typedef struct {
-  list_entry_t *list
+  list_entry_t *list;
   int (*cmp) (const void *, const void *); /* Comparison function */
 } list_head_t;
 
@@ -61,3 +58,44 @@ void *list_search (list_head_t *, void *key);
    De-allocates the list head as well as all of the list entries.
  */
 void list_delete (list_head_t *);
+
+
+
+//===============================//
+// TESTING FUNCTIONS FOUND BELOW //
+//===============================//
+
+
+void cmp_string_test () {
+  //TODO
+}
+
+
+/* Test linked list with k=doubles v=doubles */
+void list_doubles_test () {
+  //TODO
+}
+
+/* Test linked list with k=strings v=doubles */
+void list_string_doubles_test () {
+  //TODO
+}
+
+
+
+
+//======//
+// MAIN //
+//======//
+
+int main () {
+  printf ("Hello World!\n");
+  
+  char a[] = "Hello";
+  char b[] = "Hello";
+  
+  cmp_string (&a,&b);
+  int ans = strcmp (&a,&b);
+  printf ("%d",ans);
+  return 0;
+}
