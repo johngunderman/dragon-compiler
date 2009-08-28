@@ -35,7 +35,13 @@ typedef struct {
    on error return NULL.
    TODO
  */
-list_head_t *list_init (int (*cmp) (const void *, const void *));
+list_head_t *list_init (int (*cmp) (const void *, const void *)) {
+  list_head_t *head = malloc (sizeof (list_head_t));
+  assert (cmp != NULL);
+  if (cmp == NULL) return NULL;
+  head->cmp = cmp;
+  return head;
+}
 
 
 /* 
