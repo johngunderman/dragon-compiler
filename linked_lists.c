@@ -107,14 +107,9 @@ void list_string_doubles_test () {
 //======//
 
 int main () {
-  printf ("Hello World!\n");
-  
-  char a[] = "Hello";
-  char b[] = "Hello";
-  
-  int ans = cmp_string (&a,&b);
-  printf ("%d\n",ans);
-
   cmp_string_test();
+
+  list_head_t *head = list_init (cmp_string);
+
   return 0;
 }
