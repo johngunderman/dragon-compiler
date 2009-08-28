@@ -2,6 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /* 
    a and b are pointers to char (cast into pointers to void)
@@ -10,8 +11,8 @@
    TODO: use stuff from string.c
 */
 int cmp_string (const void *a, const void *b) {
-  int c = strcmp ((char *) a,(char *) b);
-  printf ("%d\n",c);
+  if (a == NULL || b == NULL) return 1;
+  return strcmp ((char *) a,(char *) b);
 }
 
 
@@ -67,7 +68,18 @@ void list_delete (list_head_t *);
 
 
 void cmp_string_test () {
-  //TODO
+  char word1 [] = "eecs";
+  char word2 [] = "EECS";
+  char word3 [] = "eec";
+
+  assert (cmp_string (&word1, &word1) == 0);
+  printf ("Passed Test: 'eecs' == 'eecs'\n");
+  assert (cmp_string (&word1, &word2) != 0);
+  printf ("Passed Test: 'eecs' != 'EECS'\n");
+  assert (cmp_string (&word1, &word3) != 0);
+  printf ("Passed Test: 'eecs' != 'eec'\n");
+  assert (cmp_string (&word1, NULL) != 0);
+  printf ("Passed Test: 'eecs' != NULL\n");
 }
 
 
@@ -94,8 +106,9 @@ int main () {
   char a[] = "Hello";
   char b[] = "Hello";
   
-  cmp_string (&a,&b);
-  int ans = strcmp (&a,&b);
-  printf ("%d",ans);
+  int ans = cmp_string (&a,&b);
+  printf ("%d\n",ans);
+
+  cmp_string_test();
   return 0;
 }
