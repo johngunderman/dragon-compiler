@@ -19,7 +19,7 @@ int cmp_string (const void *a, const void *b) {
   return strcmp ((char *) a,(char *) b);
 }
 
-struct list_entry_t;
+//struct list_entry_t;
 
 typedef struct { 
   void *key;
