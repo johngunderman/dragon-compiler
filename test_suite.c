@@ -28,34 +28,37 @@ void cmp_string_test () {
 
 /* Test linked list with k=doubles v=doubles */
 void list_doubles_test () {
-  list_head_t *head = list_init (cmp_string);
+  list_head_t *head = list_init (cmp_double);
   double value1 = 1;
   double value2 = 2;
 
   list_insert (head, &value1, &value2);
-  value1 = 5;
-  value2 = 6;
-  list_insert (head, &value1, &value2);
-  value1 = 2;
-  value2 = 9;
-  list_insert (head, &value1, &value2);
+  double value3 = 5;
+  double value4 = 6;
+  list_insert (head, &value3, &value4);
+  double value5 = 2;
+  double value6 = 9;
+  list_insert (head, &value5, &value6);
+  
+  pretty_print (head);
 
-  value1 = 1;
-  printf ("Value of list_search: %d", *(double*)list_search (head, &value1));
+  double value7 = 1;
+  printf ("does 1 equal 9? %d\n", cmp_double (&value1, &value2));
+  printf ("Value of list_search: %f\n", *(double*)list_search (head, &value1));
 
-  assert (*(double*)list_search (head, &value1) == 6);
+  assert (*(double*)list_search (head, &value1) == 2.0);
   printf ("Passed Test\n");
 
-  value1 = 5;
+  value7 = 5;
   assert (*(double*)list_search (head, &value1) == 6);
   printf ("Passed Test 2\n");
   
 
-  value1 = 2;
+  value7 = 2;
   assert (*(double*)list_search (head, &value1) == 6);
   printf ("Passed Test 3\n");  
 
-  value1 = 4;
+  value7 = 4;
   assert ((double*)list_search (head,&value1 ) == NULL);
   printf ("Passed Test 4: non-valid key test\n");
 }

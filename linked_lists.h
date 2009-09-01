@@ -19,9 +19,19 @@ int cmp_string (const void *a, const void *b) {
   return strcmp ((char *) a,(char *) b);
 }
 
+/* 
+   returns 0 if a == b and 1 if a != b
+   sort of redundant, but necissary in order to get a function
+   pointer for the linked lists.
+ */
+int cmp_double (const void *a, const void *b) {
+  return (*(double*)a != *(double*)b);
+}
+
+
 //struct list_entry_t;
 
-typedef struct { 
+typedef struct list_entry_t { 
   void *key;
   void *value;
   struct list_entry_t *next;
@@ -31,6 +41,18 @@ typedef struct {
   list_entry_t *list;
   int (*cmp) (const void *, const void *); /* Comparison function */
 } list_head_t;
+
+
+
+/* TESTING: */
+void pretty_print (list_head_t *head) {
+  list_entry_t *current = head->list;
+  while (current != NULL) {
+    printf ("%f, %f, --> ",*(double*)current->key, *(double*)current->value );
+    current = current->next;
+  }
+  printf ("\n");
+}
 
 
 /* 
@@ -67,24 +89,19 @@ int list_insert (list_head_t *head, void *key, void *value) {
   list_entry_t *entry = malloc (sizeof (list_entry_t));
   
   if (entry == NULL) {
-    printf ("Failed malloc in list_insert");
-    exit (1);
+    fprintf (stderr,"Failed malloc in list_insert");
+    return -1;
   }
   
   entry->key = key;
   entry->value = value;
-  entry->next = NULL;
   
-  if (head->list == NULL) {
-    head->list = entry;
-  } else {
-    list_entry_t *current = head->list;
-    while (current->next != NULL) {
-      current = current->next;
-    }
-    current->next = entry;
-  }
-  //TODO: When should we return -1?
+  entry->next = head->list;
+  head->list = entry;
+  
+
+  pretty_print (head);
+
   return 0;
 }
 
@@ -95,16 +112,34 @@ int list_insert (list_head_t *head, void *key, void *value) {
    TODO
  */
 void *list_search (list_head_t *head, void *key) {
-  if (cmp_string (head->list->key, key) == 0) {
+  printf ("Entering list_search\n");
+  
+  if (head->cmp (head->list->key, key) == 0) {
+    printf ("list key is %f and key is %f\n",*(double*)head->list->key, *(double*)key);
+    printf ("the value is %f", *(double*)head->list->value);
+    printf ("1\n");
     return head->list->value;
   } else {
+    printf ("2\n");
     list_entry_t *current = head->list->next;
     
-    while (cmp_string (current, key) != 0) {
+    
+    printf ("current is %f\n", *(double*)(current->value));     
+    printf ("cmp to %f is %d\n",*(double*)key, head->cmp (current, key));
+
+    while (head->cmp (current, key) != 0) {
+      printf ("3\n");
+      printf ("%f\n", *(double*)current->next->key);
       if (current->next == NULL) {
+	printf ("Oh no! we have a null!");
 	return NULL;
-      } else current = current->next;
+      } else {
+	printf ("foobar");
+	current = current->next;
+      }
     }
+    printf ("4\n");
+    printf ("returned value is %f\n",*(double*)(current->value));
     return current->value;
     //TODO!
   }
