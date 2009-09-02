@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "linked_lists.h"
+#include "hash_tables.h"
 
 void cmp_string_test () {
   char word1 [] = "eecs";
@@ -93,6 +94,13 @@ void list_string_doubles_test () {
 }
 
 
+//==================//
+// Hash Table Tests //
+//==================//
+
+void hash_doubles_test ();
+
+void hash_string_doubles_test ();
 
 
 //======//
@@ -107,3 +115,5 @@ int main () {
   list_string_doubles_test();
   return 0;
 }
+
+

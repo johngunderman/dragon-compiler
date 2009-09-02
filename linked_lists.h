@@ -44,17 +44,6 @@ typedef struct {
 
 
 
-/* TESTING: */
-void pretty_print (list_head_t *head) {
-  list_entry_t *current = head->list;
-  while (current != NULL) {
-    printf ("%f, %f, --> ",*(double*)current->key, *(double*)current->value );
-    current = current->next;
-  }
-  printf ("\n");
-}
-
-
 /* 
    Allocates a list head,
    assigns the comparison function,
@@ -107,7 +96,6 @@ int list_insert (list_head_t *head, void *key, void *value) {
 /* 
    search the list for an element whose key matches the second arg.
    returns value of elem. or null if not found.
-   TODO
  */
 void *list_search (list_head_t *head, void *key) {
   list_entry_t *current = head->list;
