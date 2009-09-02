@@ -66,8 +66,8 @@ list_head_t *list_init (int (*cmp) (const void *, const void *)) {
   list_head_t *head = malloc (sizeof (list_head_t));
   
   if (head == NULL) {
-    printf ("Failed malloc in list_init");
-    exit (1);
+    fprintf (stderr,"Failed malloc in list_init");
+    return NULL;
   }
 
   assert (cmp != NULL);
@@ -100,8 +100,6 @@ int list_insert (list_head_t *head, void *key, void *value) {
   head->list = entry;
   
 
-  pretty_print (head);
-
   return 0;
 }
 
@@ -112,37 +110,15 @@ int list_insert (list_head_t *head, void *key, void *value) {
    TODO
  */
 void *list_search (list_head_t *head, void *key) {
-  printf ("Entering list_search\n");
-  
-  if (head->cmp (head->list->key, key) == 0) {
-    printf ("list key is %f and key is %f\n",*(double*)head->list->key, *(double*)key);
-    printf ("the value is %f", *(double*)head->list->value);
-    printf ("1\n");
-    return head->list->value;
-  } else {
-    printf ("2\n");
-    list_entry_t *current = head->list->next;
-    
-    
-    printf ("current is %f\n", *(double*)(current->value));     
-    printf ("cmp to %f is %d\n",*(double*)key, head->cmp (current, key));
-
-    while (head->cmp (current, key) != 0) {
-      printf ("3\n");
-      printf ("%f\n", *(double*)current->next->key);
-      if (current->next == NULL) {
-	printf ("Oh no! we have a null!");
-	return NULL;
-      } else {
-	printf ("foobar");
-	current = current->next;
-      }
+  list_entry_t *current = head->list;
+  while (current != NULL) {
+    if (head->cmp (current->key, key) == 0) {
+      return current->value;
+    } else {
+      current = current->next;
     }
-    printf ("4\n");
-    printf ("returned value is %f\n",*(double*)(current->value));
-    return current->value;
-    //TODO!
   }
+  return NULL;
 }
 
 

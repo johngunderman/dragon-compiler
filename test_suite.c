@@ -15,6 +15,8 @@ void cmp_string_test () {
   char word2 [] = "EECS";
   char word3 [] = "eec";
 
+  printf ("Testing string comparison function:\n");
+
   assert (cmp_string (&word1, &word1) == 0);
   printf ("Passed Test: 'eecs' == 'eecs'\n");
   assert (cmp_string (&word1, &word2) != 0);
@@ -40,31 +42,53 @@ void list_doubles_test () {
   double value6 = 9;
   list_insert (head, &value5, &value6);
   
-  pretty_print (head);
-
+  printf ("Testing linked list with k=doubles, v=doubles:\n");
+  
   double value7 = 1;
-  printf ("does 1 equal 9? %d\n", cmp_double (&value1, &value2));
-  printf ("Value of list_search: %f\n", *(double*)list_search (head, &value1));
-
-  assert (*(double*)list_search (head, &value1) == 2.0);
-  printf ("Passed Test\n");
+  assert (*(double*)list_search (head, &value7) == 2.0);
+  printf ("Passed Test 1\n");
 
   value7 = 5;
-  assert (*(double*)list_search (head, &value1) == 6);
+  assert (*(double*)list_search (head, &value7) == 6.0);
   printf ("Passed Test 2\n");
   
 
   value7 = 2;
-  assert (*(double*)list_search (head, &value1) == 6);
+  assert (*(double*)list_search (head, &value7) == 9);
   printf ("Passed Test 3\n");  
 
   value7 = 4;
-  assert ((double*)list_search (head,&value1 ) == NULL);
+  assert ((double*)list_search (head,&value7 ) == NULL);
   printf ("Passed Test 4: non-valid key test\n");
 }
 
 /* test linked list with k=strings v=doubles */
 void list_string_doubles_test () {
+  list_head_t *head = list_init (cmp_string);
+  char value1[] = "hello";
+  char value2[] = "world";
+  char value3[] = "foobar";
+  double value4 = 23;
+  double value5 = 47;
+  double value6 = 91;
+
+  char extra[] = "notakey";
+
+  printf ("Testing linked list with k=strings v=doubles:\n");
+  
+  list_insert (head, &value1, &value4);
+  list_insert (head, &value2, &value5);
+  list_insert (head, &value3, &value6);
+
+  assert (*(double*)list_search(head,&value1) == 23.0);
+  printf ("Passed the first test.\n");
+  assert (*(double*)list_search(head, &value2) == 47.0);
+  printf ("Passed the second test. \n");
+  assert (*(double*)list_search(head, &value3) == 91.0);
+  printf ("Passed the third test. \n");
+  assert ((double*)list_search(head,&extra) == NULL);
+  printf ("Passed the fourth test: bad key returns NULL.\n");
+
   //TODO
 }
 
@@ -79,6 +103,7 @@ int main () {
   cmp_string_test();
   printf ("\n");
   list_doubles_test();
-
+  printf ("\n");
+  list_string_doubles_test();
   return 0;
 }
