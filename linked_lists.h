@@ -7,6 +7,9 @@
    part of a symbol table for a C-like compiler.
 */
 
+#ifndef LINKED_LISTS_H
+#define LINKED_LISTS_H
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -125,3 +128,4 @@ void list_delete (list_head_t *head) {
   }
 }
 
+#endif

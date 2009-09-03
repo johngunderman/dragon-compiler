@@ -98,9 +98,13 @@ void list_string_doubles_test () {
 // Hash Table Tests //
 //==================//
 
-void hash_doubles_test ();
+void hash_doubles_test () {
 
-void hash_string_doubles_test ();
+}
+
+void hash_string_doubles_test () {
+
+}
 
 
 //======//
