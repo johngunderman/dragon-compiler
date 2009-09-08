@@ -18,7 +18,7 @@ typedef struct {
   size_t size;
   int (*cmp) (const void *, const void *);
   int (*hash) (const void *);
-  list_head_t **entries; 	/* entries is a dynamically
+  list_head_t **entries; 	/* entries is a dynamically (not really)
 				 sized array of linked lists */
 } hash_table_t;
 
@@ -31,7 +31,7 @@ int string_hasher (const void *key) {
   int i = 0;
 
   while (*((char *) key + i) != 0){
-    total += *((char *)key + i);
+    total += *((char *)key + i) + total * 31;
     i++;
   }
   return total;
@@ -65,10 +65,6 @@ hash_table_t *hash_table_init (int (*cmp) (const void *, const void *), int (*ha
    Add a key and its corresponding value to the table.
    Does NOT check if the key is already present.
    Does NOT overwrite keys, but previous key may become unreachable.
-   
-   TODO: figure out what the hell the behavior of this function
-   should be.
-   
    Returns 0 on success, -1 on failure.
 */
 int hash_table_insert (hash_table_t *table, void *key, void *value) {
