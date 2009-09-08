@@ -61,6 +61,8 @@ void list_doubles_test () {
   value7 = 4;
   assert ((double*)list_search (head,&value7 ) == NULL);
   printf ("Passed Test 4: non-valid key test\n");
+  
+  list_delete (head);
 }
 
 /* test linked list with k=strings v=doubles */
@@ -90,7 +92,7 @@ void list_string_doubles_test () {
   assert ((double*)list_search(head,&extra) == NULL);
   printf ("Passed the fourth test: bad key returns NULL.\n");
 
-  //TODO
+  list_delete (head);
 }
 
 
@@ -99,11 +101,36 @@ void list_string_doubles_test () {
 //==================//
 
 void hash_doubles_test () {
-
+  
 }
 
 void hash_string_doubles_test () {
+  hash_table_t *table = hash_table_init (cmp_string, string_hasher);
+  char value1[] = "hello";
+  char value2[] = "world";
+  char value3[] = "foobar";
+  double value4 = 23;
+  double value5 = 47;
+  double value6 = 91;
 
+  char extra[] = "notakey";
+
+  printf ("Testing hash table with k=strings v=doubles:\n");
+  
+  hash_table_insert (table, &value1, &value4);
+  hash_table_insert (table, &value2, &value5);
+  hash_table_insert (table, &value3, &value6);
+
+  assert (*(double*)hash_table_search(table,&value1) == 23.0);
+  printf ("Passed the first test.\n");
+  assert (*(double*)hash_table_search(table, &value2) == 47.0);
+  printf ("Passed the second test. \n");
+  assert (*(double*)hash_table_search(table, &value3) == 91.0);
+  printf ("Passed the third test. \n");
+  assert ((double*)hash_table_search(table,&extra) == NULL);
+  printf ("Passed the fourth test: bad key returns NULL.\n");
+  
+  hash_table_delete (table);
 }
 
 
@@ -117,6 +144,8 @@ int main () {
   list_doubles_test();
   printf ("\n");
   list_string_doubles_test();
+  printf ("\n");
+  hash_string_doubles_test();
   return 0;
 }
 

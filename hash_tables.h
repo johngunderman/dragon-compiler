@@ -29,7 +29,8 @@ typedef struct {
 int string_hasher (const void *key) {
   int total = 0;
   int i = 0;
-  while (((char *) key + i) != NULL){
+
+  while (*((char *) key + i) != 0){
     total += *((char *)key + i);
     i++;
   }
@@ -72,7 +73,6 @@ hash_table_t *hash_table_init (int (*cmp) (const void *, const void *), int (*ha
 */
 int hash_table_insert (hash_table_t *table, void *key, void *value) {
   int hash = table->hash (key) % table->size;
-  
   list_entry_t *entry = malloc (sizeof (list_entry_t));
   if (entry == NULL) {
     fprintf (stderr, "Error on malloc in hash_table_insert");
@@ -103,4 +103,13 @@ void *hash_table_search (hash_table_t *table, void *key) {
 /* 
    De-allocates the table as well of all of its entries.
  */
-void hash_table_delete (hash_table_t *table);
+void hash_table_delete (hash_table_t *table) {
+  size_t i = 0;
+  while ( i < table->size) {
+    if (table->entries[i] != NULL) {
+      list_delete (table->entries[i]);
+    }
+    i++;
+  }
+  free (table);
+}

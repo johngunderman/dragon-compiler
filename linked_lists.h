@@ -118,13 +118,14 @@ void *list_search (list_head_t *head, void *key) {
  */
 void list_delete (list_head_t *head) {
   list_entry_t *current = head->list;
-  list_entry_t *next = current->next;
-  
+  list_entry_t *next;
+
   free (head);
+      
   while (current != NULL) {
+    next = current->next;
     free (current);
     current = next;
-    next = current->next;
   }
 }
 
