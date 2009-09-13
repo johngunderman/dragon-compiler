@@ -37,6 +37,15 @@ int string_hasher (const void *key) {
   return total;
 }
 
+/*
+  Generate an integer hash of a double. currently just casts to
+  an int and returns, which is probably not the "best" way, but
+  it certainly works fine.
+ */
+int double_hasher (const void *key) {
+  return (int) *(double *)key;
+}
+
 
 
 /* 

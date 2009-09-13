@@ -101,7 +101,38 @@ void list_string_doubles_test () {
 //==================//
 
 void hash_doubles_test () {
+  hash_table_t *head = hash_table_init (cmp_double, double_hasher);
+  double value1 = 1;
+  double value2 = 2;
+
+  hash_table_insert (head, &value1, &value2);
+  double value3 = 5;
+  double value4 = 6;
+  hash_table_insert (head, &value3, &value4);
+  double value5 = 2;
+  double value6 = 9;
+  hash_table_insert (head, &value5, &value6);
   
+  printf ("Testing hash table with k=doubles, v=doubles:\n");
+  
+  double value7 = 1;
+  assert (*(double*)hash_table_search (head, &value7) == 2.0);
+  printf ("Passed Test 1\n");
+
+  value7 = 5;
+  assert (*(double*)hash_table_search (head, &value7) == 6.0);
+  printf ("Passed Test 2\n");
+  
+
+  value7 = 2;
+  assert (*(double*)hash_table_search (head, &value7) == 9);
+  printf ("Passed Test 3\n");  
+
+  value7 = 4;
+  assert ((double*)hash_table_search (head,&value7 ) == NULL);
+  printf ("Passed Test 4: non-valid key test\n");
+  
+  hash_table_delete (head);  
 }
 
 void hash_string_doubles_test () {
@@ -139,6 +170,7 @@ void hash_string_doubles_test () {
 //======//
 
 int main () {
+  printf ("\n");
   cmp_string_test();
   printf ("\n");
   list_doubles_test();
@@ -146,6 +178,9 @@ int main () {
   list_string_doubles_test();
   printf ("\n");
   hash_string_doubles_test();
+  printf ("\n");
+  hash_doubles_test();
+  printf ("\n");
   return 0;
 }
 

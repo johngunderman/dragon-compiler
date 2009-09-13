@@ -1,2 +1,9 @@
 This compiler is a project for Case Western Reserve University's 
 EECS 337 course (Compiler Design).
+
+Currently, we have a working implementation of linked lists 
+and hash tables for our symbol table. 
+
+Note that using the same key for multiple values will result
+in only the most recent value being accessible due to how
+the linked lists are implemented.
