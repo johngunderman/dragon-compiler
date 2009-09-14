@@ -7,3 +7,13 @@ and hash tables for our symbol table.
 Note that using the same key for multiple values will result
 in only the most recent value being accessible due to how
 the linked lists are implemented.
+
+
+COMPILING
+=========
+
+To compile the project thus far, run 'make' or 'make test'.
+Both will make the test suite, an executable named test_suite.
+Running test_suite will perform tests on the linked list and
+hash table implementations. The actual test code can be found 
+in test_suite.c
