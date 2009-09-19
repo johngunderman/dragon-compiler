@@ -74,21 +74,21 @@ hash_table_t *hash_table_init (int (*cmp) (const void *, const void *), int (*ha
    Add a key and its corresponding value to the table.
    Does NOT check if the key is already present.
    Does NOT overwrite keys, but previous key may become unreachable.
-   Returns 0 on success, -1 on failure.
+   Returns pointer to the entry on success, NULL on failure.
 */
-int hash_table_insert (hash_table_t *table, void *key, void *value) {
+list_entry_t *hash_table_insert (hash_table_t *table, void *key, void *value) {
   int hash = table->hash (key) % table->size;
   list_entry_t *entry = malloc (sizeof (list_entry_t));
   if (entry == NULL) {
     fprintf (stderr, "Error on malloc in hash_table_insert");
-    return -1;
+    return NULL;
   }
 
   if (table->entries[hash] == NULL) {
     table->entries[hash] = list_init (table->cmp);
   }
   list_insert (table->entries[hash], key, value);
-  return 0;
+  return entry;
 }
 
 

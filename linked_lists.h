@@ -74,15 +74,14 @@ list_head_t *list_init (int (*cmp) (const void *, const void *)) {
 /* 
    Add a key and its corresponding value to the list.
    Does NOT check whether the key is already present in the list.
-   Returns 0 on success, -1 on failure
-   TODO
- */
-int list_insert (list_head_t *head, void *key, void *value) {
+   Returns a pointer to the new entry on success, NULL on failure
+*/
+list_entry_t *list_insert (list_head_t *head, void *key, void *value) {
   list_entry_t *entry = malloc (sizeof (list_entry_t));
   
   if (entry == NULL) {
     fprintf (stderr,"Failed malloc in list_insert");
-    return -1;
+    return NULL;
   }
   
   entry->key = key;
@@ -92,7 +91,7 @@ int list_insert (list_head_t *head, void *key, void *value) {
   head->list = entry;
   
 
-  return 0;
+  return entry;
 }
 
 
