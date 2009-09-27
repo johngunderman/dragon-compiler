@@ -10,6 +10,7 @@
 
 #include "linked_lists.h"
 #include <stdlib.h>
+#include <assert.h>
 
 #define TABLE_SIZE 100
 
@@ -102,7 +103,6 @@ void *hash_table_search (hash_table_t *table, void *key) {
   if (table->entries[hash] == NULL) return NULL;
   else return list_search (table->entries[hash], key);
 }
-
 
 
 /* 

@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 /* 
    a and b are pointers to char (cast into pointers to void)

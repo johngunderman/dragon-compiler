@@ -14,3 +14,8 @@ test_suite.o : linked_lists.h hash_tables.h
 
 clean : 
 	rm $(name) $(objects)
+
+lexer :
+	lex lexer.yy
+	gcc -o lexer lex.yy.c
+
