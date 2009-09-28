@@ -1,5 +1,12 @@
 %{
-
+  
+  /* 
+     Author: John Gunderman
+     
+     This file contains a lexical analyzer for
+     a C-like compiler.
+   */
+  
   #include <stdio.h>
   #include <string.h>
   #include "hash_tables.h"  
@@ -145,6 +152,7 @@ int main () {
     hash_pretty_print_s_i(sym_table);
     printf ("\n\nNUM Table:\n");
     hash_pretty_print_f_i(num_table);
+    printf ("\n");
     
   }
 }

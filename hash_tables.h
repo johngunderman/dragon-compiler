@@ -56,8 +56,8 @@ hash_pretty_print_f_i (hash_table_t *table){
     if (table->entries[i] != NULL) {
       list_pretty_print_f_i(table->entries[i]);
     }
+    i++;
   }
-  i++;
 }
 
 
@@ -92,7 +92,7 @@ hash_table_t *hash_table_init (int (*cmp) (const void *, const void *), int (*ha
 
   table->cmp = cmp;
   table->hash = hash;
-  table->entries =  calloc (TABLE_SIZE, sizeof (list_head_t*));
+  table->entries = calloc (TABLE_SIZE, sizeof (list_head_t*));
   table->size = TABLE_SIZE;
   
   return table;
@@ -106,17 +106,11 @@ hash_table_t *hash_table_init (int (*cmp) (const void *, const void *), int (*ha
 */
 list_entry_t *hash_table_insert (hash_table_t *table, void *key, void *value) {
   int hash = table->hash (key) % table->size;
-  list_entry_t *entry = malloc (sizeof (list_entry_t));
-  if (entry == NULL) {
-    fprintf (stderr, "Error on malloc in hash_table_insert");
-    return NULL;
-  }
-
+  
   if (table->entries[hash] == NULL) {
     table->entries[hash] = list_init (table->cmp);
   }
-  list_insert (table->entries[hash], key, value);
-  return entry;
+  return list_insert (table->entries[hash], key, value);
 }
 
 
