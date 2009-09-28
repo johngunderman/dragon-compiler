@@ -22,6 +22,9 @@
   #define NUMBER        11
   #define RELOP         12
   #define BASIC         13
+  #define WHILE         14
+  #define TRUE          15
+  #define FALSE         16
   
   void *yyval;
   hash_table_t *sym_table; 
@@ -38,7 +41,6 @@
 */
 void *install_id () {
   if (!hash_table_search(sym_table, yytext)) {
-    printf ("Whoopee! an ID is being installed!: %s\n", yytext);
     //TODO: at some point we will be storing something besides
     // simply a pointer to int_var as the value of the pair.
 
@@ -62,8 +64,12 @@ void *install_id () {
     a separate table.
 */
 void *install_num(){
-    printf ("Yippee! a number is being installed!\n");
-    return NULL;
+  int *num = malloc(sizeof (int));
+  *num = atof(yytext);
+  if (!hash_table_search(num_table, num)) {
+    return hash_table_insert(num_table, num, &int_var);
+  }
+  return NULL;
 }
 
 
@@ -87,8 +93,11 @@ number  {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 
 {ws}     {/* no action and no return */}
 if       {return(IF);}
+while    {return(WHILE);}
 then     {return(THEN);}
 else     {return(ELSE);}
+true     {return(TRUE);}
+false    {return(FALSE);}
 int	 {yyval = (void *)&int_var; return(BASIC);}
 float	 {yyval = (void *)&float_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
@@ -108,5 +117,28 @@ int main () {
   sym_table = hash_table_init(cmp_string,string_hasher);
   num_table = hash_table_init(cmp_double,double_hasher);
 
-  while (yylex()){};
+  while (1){
+    switch (yylex()) {
+    case ID:
+      printf (" id ");
+      break;
+    case NUMBER:
+      printf (" num ");
+      break;
+    case BASIC:
+      printf (" basic ");
+      break;
+    case WHILE:
+      printf (" while ");
+      break;
+    case TRUE:
+      printf (" true ");
+      break;
+    case FALSE: 
+      printf (" false ");
+      break;
+    default:
+      break;
+    }
+  }
 }
