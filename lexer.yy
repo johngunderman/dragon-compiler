@@ -32,10 +32,13 @@
   #define WHILE         14
   #define TRUE          15
   #define FALSE         16
+  #define REAL          17
+  #define EXIT          18
   
   void *yyval;
   hash_table_t *sym_table; 
   hash_table_t *num_table;
+  hash_table_t *real_table;
 
   int int_var = 1;
   int float_var = 2;
@@ -67,18 +70,29 @@ void *install_id () {
 
 
 /*
-    Similar to install_id, but puts numerical constants into
+    Similar to install_id, but puts numerical constants (ints) into
     a separate table.
 */
 void *install_num(){
-  float *num = malloc(sizeof (int));
-  *num = atof(yytext);
+  int *num = malloc(sizeof (int));
+  *num = (int) atof(yytext);
   if (!hash_table_search(num_table, num)) {
     return hash_table_insert(num_table, num, &int_var);
   }
   return NULL;
 }
 
+/* 
+   Similar to install_num, but stores floats instead of int.
+*/
+void *install_real() {
+  float *real = malloc (sizeof (float));
+  *real = atof(yytext);
+  if (!hash_table_search(real_table, real)) {
+    return hash_table_insert(real_table, real, &float_var);
+  }
+  return NULL;
+}
 
 /* 
    if yywrap returns 1, the parser will terminate when
@@ -94,9 +108,13 @@ ws      {delim}+
 letter  [A-Za-z]
 digit   [0-9]
 id      {letter}({letter}|{digit})*
-number  {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
+number  {digit}+(E[+-]?{digit}+)?
+real    {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
+
 
 %%
+
+exit     {return(EXIT); /* for testing only */}
 
 {ws}     {/* no action and no return */}
 if       {yyval = NULL; return(IF);}
@@ -109,6 +127,7 @@ int	 {yyval = (void *)&int_var; return(BASIC);}
 float	 {yyval = (void *)&float_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
 {number} {yyval = (void *) install_num(); return (NUMBER);}
+{real}   {yyval = (void *) install_real(); return (REAL);}
 
 %%
 
@@ -123,6 +142,7 @@ int main () {
 
   sym_table = hash_table_init(cmp_string,string_hasher);
   num_table = hash_table_init(cmp_double,double_hasher);
+  real_table = hash_table_init(cmp_float,float_hasher);
 
   while (1){
     switch (yylex()) {
@@ -131,6 +151,9 @@ int main () {
       break;
     case NUMBER:
       printf (" num ");
+      break;
+    case REAL:
+      printf (" real ");
       break;
     case BASIC:
       printf (" basic ");
@@ -144,15 +167,22 @@ int main () {
     case FALSE: 
       printf (" false ");
       break;
+    case EXIT:
+      goto print_on_exit;
+      break;
     default:
       break;
     }
     
-    printf ("\n\nID Table:\n");
-    hash_pretty_print_s_i(sym_table);
-    printf ("\n\nNUM Table:\n");
-    hash_pretty_print_f_i(num_table);
-    printf ("\n");
     
   }
+ print_on_exit:
+  printf ("\n\nID Table:\n");
+  hash_pretty_print_s_i(sym_table);
+  printf ("\n\nNUM Table:\n");
+  hash_pretty_print_i_i(num_table);
+  printf ("\n\nREAL Table:\n");
+  hash_pretty_print_f_i(real_table);
+  printf ("\n");
+  
 }

@@ -33,6 +33,15 @@ int cmp_double (const void *a, const void *b) {
 }
 
 
+/* 
+   returns 0 if a == b and 1 if a != b
+*/
+int cmp_float (const void *a, const void *b) {
+  return (*(float*)a != *(float*)b);
+}
+
+
+
 //struct list_entry_t;
 
 typedef struct list_entry_t { 
@@ -68,6 +77,22 @@ void list_pretty_print_s_i (list_head_t *head) {
     current = current->next;
   }
 }
+
+/*
+  Pretty prints the linked list for K:int V:int
+*/
+void list_pretty_print_i_i (list_head_t *head) {
+  list_entry_t *current = head->list;
+  while (current != NULL) {
+    printf ("%i: %i\n",*(int*)current->key, *(int*)current->value );
+    current = current->next;
+  }
+}
+
+
+
+
+
 
 /* 
    Allocates a list head,
