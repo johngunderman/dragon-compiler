@@ -140,5 +140,11 @@ int main () {
     default:
       break;
     }
+    
+    printf ("\n\nID Table:\n");
+    hash_pretty_print_s_i(sym_table);
+    printf ("\n\nNUM Table:\n");
+    hash_pretty_print_f_i(num_table);
+    
   }
 }

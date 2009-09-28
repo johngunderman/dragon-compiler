@@ -47,6 +47,33 @@ int double_hasher (const void *key) {
   return (int) *(double *)key;
 }
 
+/*
+  Pretty prints the hash table for K:float V:int
+*/
+hash_pretty_print_f_i (hash_table_t *table){
+  int i = 0;
+  while ( i < table->size) {
+    if (table->entries[i] != NULL) {
+      list_pretty_print_f_i(table->entries[i]);
+    }
+  }
+  i++;
+}
+
+
+/*
+  Pretty prints the hash table for K:string V:int
+*/  
+hash_pretty_print_s_i (hash_table_t *table){
+  int i = 0;
+  while ( i < table->size) {
+    if (table->entries[i] != NULL) {
+      list_pretty_print_s_i(table->entries[i]);
+    }
+    i++;
+  }
+}
+
 
 
 /* 

@@ -47,6 +47,27 @@ typedef struct {
 } list_head_t;
 
 
+/*
+  Pretty prints the linked list for K:float V:int
+*/
+void list_pretty_print_f_i (list_head_t *head) {
+  list_entry_t *current = head->list;
+  while (current != NULL) {
+    printf ("%f: %i\n",*(double*)current->key, *(int*)current->value );
+    current = current->next;
+  }
+}
+
+/*
+  Pretty prints the linked list for K:string V:int
+*/
+void list_pretty_print_s_i (list_head_t *head) {
+  list_entry_t *current = head->list;
+  while (current != NULL) {
+    printf ("%s: %i\n",(char*)current->key, *(int*)current->value );
+    current = current->next;
+  }
+}
 
 /* 
    Allocates a list head,
