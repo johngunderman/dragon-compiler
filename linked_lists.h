@@ -53,7 +53,7 @@ typedef struct {
 void list_pretty_print_f_i (list_head_t *head) {
   list_entry_t *current = head->list;
   while (current != NULL) {
-    printf ("%d: %d\n",*(int*)current->key, *(int*)current->value );
+    printf ("%f: %d\n",*(float*)current->key, *(int*)current->value );
     current = current->next;
   }
 }

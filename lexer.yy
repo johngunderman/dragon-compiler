@@ -71,7 +71,7 @@ void *install_id () {
     a separate table.
 */
 void *install_num(){
-  int *num = malloc(sizeof (int));
+  float *num = malloc(sizeof (int));
   *num = atof(yytext);
   if (!hash_table_search(num_table, num)) {
     return hash_table_insert(num_table, num, &int_var);
@@ -99,12 +99,12 @@ number  {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 %%
 
 {ws}     {/* no action and no return */}
-if       {return(IF);}
-while    {return(WHILE);}
-then     {return(THEN);}
-else     {return(ELSE);}
-true     {return(TRUE);}
-false    {return(FALSE);}
+if       {yyval = NULL; return(IF);}
+while    {yyval = NULL; return(WHILE);}
+then     {yyval = NULL; return(THEN);}
+else     {yyval = NULL; return(ELSE);}
+true     {yyval = NULL; return(TRUE);}
+false    {yyval = NULL; return(FALSE);}
 int	 {yyval = (void *)&int_var; return(BASIC);}
 float	 {yyval = (void *)&float_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
