@@ -16,6 +16,6 @@ clean :
 	rm $(name) $(objects)
 
 lexer :
-	lex lexer.yy
+	lex lexer.lex
 	gcc -o lexer lex.yy.c
 
