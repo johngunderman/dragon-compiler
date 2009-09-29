@@ -13,7 +13,7 @@ test : $(objects)
 test_suite.o : linked_lists.h hash_tables.h
 
 clean : 
-	rm $(name) $(objects)
+	rm -rf $(name) $(objects) lex.yy.c
 
 lexer :
 	lex lexer.lex
