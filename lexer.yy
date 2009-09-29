@@ -43,6 +43,9 @@
   int int_var = 1;
   int float_var = 2;
 
+  int true_var = 3
+  int false_var = 4
+
 
 /*
     Function to install the lexeme, whose first character
@@ -121,8 +124,8 @@ if       {yyval = NULL; return(IF);}
 while    {yyval = NULL; return(WHILE);}
 then     {yyval = NULL; return(THEN);}
 else     {yyval = NULL; return(ELSE);}
-true     {yyval = NULL; return(TRUE);}
-false    {yyval = NULL; return(FALSE);}
+true     {yyval = &true_var; return(TRUE);}
+false    {yyval = &false_var; return(FALSE);}
 int	 {yyval = (void *)&int_var; return(BASIC);}
 float	 {yyval = (void *)&float_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}

@@ -1,0 +1,19 @@
+Notes on the version control system used for this project:
+
+NOTE: If you are cloning this project of github or another
+git repo, don't worry about this document. It is primarily
+for the TAs who will be grading it.
+
+
+The versioning control system used for this project is known
+as git (git-scm.com). Git is a distributed source control 
+management tool (scm). In short, what this means is that the
+copy of the project that I have on my machine right now is
+a repository of its own. I can commit to it just like one
+would commit to a remote repo in svn. If you're interested
+in learning more about git, I suggest just visiting their
+website, because I'm just going to cut to the chase here
+and tell you that I have a sync'd repo living on volatile
+and I have on on github. However, since the github repo is
+public, I will only push (update) to it with code that has
+already been due. That's my scm in a nutshell.

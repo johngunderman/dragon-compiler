@@ -1,0 +1,7 @@
+
+The following are the (expanded) regexes used for the lexer.
+
+basic   int|float
+id      [A-Za-z]([A-Za-z]|[0-9])*
+number  [0-9]+(E[+-]?[0-9]+)?
+real    [0-9]+(\.[0-9]+)?(E[+-]?[0-9]+)?
