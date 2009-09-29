@@ -168,21 +168,19 @@ int main () {
       printf (" false ");
       break;
     case EXIT:
-      goto print_on_exit;
-      break;
+      printf ("\n\nID Table:\n");
+      hash_pretty_print_s_i(sym_table);
+      printf ("\n\nNUM Table:\n");
+      hash_pretty_print_i_i(num_table);
+      printf ("\n\nREAL Table:\n");
+      hash_pretty_print_f_i(real_table);
+      printf ("\n");
+      exit(0);
     default:
       break;
     }
     
     
   }
- print_on_exit:
-  printf ("\n\nID Table:\n");
-  hash_pretty_print_s_i(sym_table);
-  printf ("\n\nNUM Table:\n");
-  hash_pretty_print_i_i(num_table);
-  printf ("\n\nREAL Table:\n");
-  hash_pretty_print_f_i(real_table);
-  printf ("\n");
-  
+ 
 }

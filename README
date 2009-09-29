@@ -1,19 +1,79 @@
 This compiler is a project for Case Western Reserve University's 
 EECS 337 course (Compiler Design).
 
+Hmwk1:
+======
 Currently, we have a working implementation of linked lists 
 and hash tables for our symbol table. 
 
-Note that using the same key for multiple values will result
-in only the most recent value being accessible due to how
-the linked lists are implemented.
+Note that using the same key for multiple values in the
+hash table / linked lists will result in only the most 
+recent value being accessible due to how the linked lists 
+are implemented.
+
+Hmwk2:
+======
+We have a lexer as per the spec of hmwk2. The binary, called
+./lexer is built according to the instructions in the
+Compiling section. The lexer currently reads from stdin,
+so you can evaluate statements by typing them into stdin
+and pressing Return.
+
+Exiting the lexer can be achieved by typing 'exit'.
+This will also print out a list of the contents of
+the symbol table, number table, and real table.
+The numbers associated with each entry in the tables
+were arbitrarily assigned.
+
+An example session with the lexer would look something like
+this (where the lines which start with a space are printed
+out by the lexer):
+
+--------------
+john@kiwi:~/projects/dragon-compiler(master)$ ./lexer 
+int i; while (true) i=i+1;
+ basic  id ; while ( true ) id = id + num ;
+foo bar
+ id  id 
+32.1
+ real 
+234
+ num 
+
+exit
+
+
+ID Table:
+i: 1
+foo: 1
+bar: 1
+
+
+NUM Table:
+234: 1
+1: 1
+
+
+REAL Table:
+32.099998: 2
+--------------
+
 
 
 COMPILING
 =========
 
+TEST SUITE:
 To compile the project thus far, run 'make' or 'make test'.
 Both will make the test suite, an executable named test_suite.
 Running test_suite will perform tests on the linked list and
 hash table implementations. The actual test code can be found 
 in test_suite.c
+
+
+LEXER: (hmwk2)
+The lexer IS NOT currently part of the test suite, so you
+will have the infinite pleasure of testing it out by hand.
+Simply run 'make lexer' (or 'make -B lexer' if you have issues)
+and then run ./lexer from the build directory. 
+
