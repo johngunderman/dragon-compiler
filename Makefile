@@ -1,5 +1,5 @@
 
-objects = test_suite.o
+objects = test_suite.o linked_lists.o hash_tables.o
 name = linked_lists
 
 CFLAGS = -Wall -Wextra -Werror -pedantic -O -g -std=c99
@@ -11,6 +11,10 @@ test : $(objects)
 	gcc -o test_suite $(objects)
 
 test_suite.o : linked_lists.h hash_tables.h
+
+linked_lists.o : linked_lists.h
+
+hash_tables.o : linked_lists.h hash_tables.h
 
 clean : 
 	rm -rf $(name) $(objects) lex.yy.c
