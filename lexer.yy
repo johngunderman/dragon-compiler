@@ -43,8 +43,11 @@
   int int_var = 1;
   int float_var = 2;
 
-  int true_var = 3
-  int false_var = 4
+
+
+
+  int true_var = 3;
+  int false_var = 4;
 
 
 /*
