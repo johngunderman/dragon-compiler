@@ -17,9 +17,9 @@ linked_lists.o : linked_lists.h
 hash_tables.o : linked_lists.h hash_tables.h
 
 clean : 
-	rm -rf $(name) $(objects) lex.yy.c
+	rm -rf $(name) $(objects) lex.yy.c *.o *~
 
-lexer :
+lexer : hash_tables.o linked_lists.o
 	lex lexer.lex
-	gcc -o lexer lex.yy.c
-
+	gcc -c lex.yy.c
+	gcc -o lexer lex.yy.o hash_tables.o linked_lists.o

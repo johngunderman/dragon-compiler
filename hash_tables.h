@@ -6,6 +6,7 @@
 #define HASH_TABLE_H
 
 #include <stdlib.h>
+#include "linked_lists.h"
 
 #define TABLE_SIZE 100
 
