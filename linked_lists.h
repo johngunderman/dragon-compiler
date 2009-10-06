@@ -21,9 +21,7 @@ int cmp_string (const void *a, const void *b);
 
 int cmp_double (const void *a, const void *b);
 
-int cmp_float (const void *a, const void *b);
-
-void list_pretty_print_f_i (list_head_t *head);
+void list_pretty_print_d_i (list_head_t *head);
 
 void list_pretty_print_s_i (list_head_t *head);
 

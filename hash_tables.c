@@ -38,24 +38,15 @@ int double_hasher (const void *key) {
   return (int) *(double *)key;
 }
 
-/*
-  Generate an integer hash of a float. Currently just
-  multiplies it by a prime and then casts.
-*/
-int float_hasher (const void *key) {
-  return (int) ((*(float *)key) * 1873);
-}
-
-
 
 /*
   Pretty prints the hash table for K:float V:int
 */
-void hash_pretty_print_f_i (hash_table_t *table){
+void hash_pretty_print_d_i (hash_table_t *table){
   size_t i = 0;
   while ( i < table->size) {
     if (table->entries[i] != NULL) {
-      list_pretty_print_f_i(table->entries[i]);
+      list_pretty_print_d_i(table->entries[i]);
     }
     i++;
   }

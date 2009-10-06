@@ -32,26 +32,13 @@ int cmp_double (const void *a, const void *b) {
 }
 
 
-/* 
-   returns 0 if a == b and 1 if a != b
-*/
-int cmp_float (const void *a, const void *b) {
-  return (*(float*)a != *(float*)b);
-}
-
-
-
-//struct list_entry_t;
-
-
-
 /*
-  Pretty prints the linked list for K:float V:int
+  Pretty prints the linked list for K:double V:int
 */
-void list_pretty_print_f_i (list_head_t *head) {
+void list_pretty_print_d_i (list_head_t *head) {
   list_entry_t *current = head->list;
   while (current != NULL) {
-    printf ("%f: %d\n",*(float*)current->key, *(int*)current->value );
+    printf ("%f: %d\n",*(double*)current->key, *(int*)current->value );
     current = current->next;
   }
 }
