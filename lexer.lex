@@ -11,9 +11,7 @@
   #include <string.h>
   #include "hash_tables.h"  
 
-  #define EXIT          18
-  
-  void *yyval;
+   void *yyval;
   hash_table_t *sym_table; 
   hash_table_t *num_table;
   hash_table_t *real_table;
@@ -95,11 +93,10 @@ real    {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 
 %%
 
-exit     {return(EXIT); /* for testing only */}
-
 {ws}     {/* no action and no return */}
 if       {yyval = NULL; return(IF);}
 while    {yyval = NULL; return(WHILE);}
+break    {yyval = NULL; return(BREAK);}
 then     {yyval = NULL; return(THEN);}
 else     {yyval = NULL; return(ELSE);}
 true     {yyval = &true_var; return(TRUE);}
@@ -107,61 +104,10 @@ false    {yyval = &false_var; return(FALSE);}
 int	 {yyval = (void *)&int_var; return(BASIC);}
 double	 {yyval = (void *)&double_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
-{number} {yyval = (void *) install_num(); return (NUMBER);}
+{number} {yyval = (void *) install_num(); return (NUM);}
 {real}   {yyval = (void *) install_real(); return (REAL);}
 
 %%
 
 
 
-/* 
-   A test main function so I can mess around a bit with the
-   parser.
-*/
-int main () {
-  yyin = stdin;
-
-  sym_table = hash_table_init(cmp_string,string_hasher);
-  num_table = hash_table_init(cmp_double,double_hasher);
-  real_table = hash_table_init(cmp_double,double_hasher);
-
-  while (1){
-    switch (yylex()) {
-    case ID:
-      printf (" id ");
-      break;
-    case NUMBER:
-      printf (" num ");
-      break;
-    case REAL:
-      printf (" real ");
-      break;
-    case BASIC:
-      printf (" basic ");
-      break;
-    case WHILE:
-      printf (" while ");
-      break;
-    case TRUE:
-      printf (" true ");
-      break;
-    case FALSE: 
-      printf (" false ");
-      break;
-    case EXIT:
-      printf ("\n\nID Table:\n");
-      hash_pretty_print_s_i(sym_table);
-      printf ("\n\nNUM Table:\n");
-      hash_pretty_print_i_i(num_table);
-      printf ("\n\nREAL Table:\n");
-      hash_pretty_print_d_i(real_table);
-      printf ("\n");
-      exit(0);
-    default:
-      break;
-    }
-    
-    
-  }
- 
-}

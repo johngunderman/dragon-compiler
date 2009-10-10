@@ -23,3 +23,10 @@ lexer : hash_tables.o linked_lists.o
 	lex lexer.lex
 	gcc -c lex.yy.c
 	gcc -o lexer lex.yy.o hash_tables.o linked_lists.o
+
+parser : hash_tables.o linked_lists.o
+	lex lexer.lex
+	yacc parser.yacc
+	gcc y.tab.c -ly -ll hash_tables.o linked_lists.o
+
+

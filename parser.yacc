@@ -3,15 +3,27 @@
 */
 
 %{
-  #define YYSTYPE double
+  #include <stdio.h>
+  
+#define YYSTYPE void *
 
   int yylex (void);
   void yyerror (char const *);
 %}
 
+
+/* 
+   %expect tells bison/yacc that the 'dangling else' it
+   finds in this grammar is harmless. The default action
+   is to shift, and this is what we want, so we don't have
+   to worry about it.
+*/
+%expect 1
+
 %token NUM
 %token BASIC
 %token IF
+%token THEN
 %token ELSE
 %token DO
 %token WHILE
@@ -20,6 +32,12 @@
 %token REAL
 %token TRUE
 %token FALSE
+%token LT
+%token GT
+%token GE
+%token LE
+%token NE
+%token EQ
 
 %% /* Grammar rules and actions follow.  */
 
@@ -66,15 +84,15 @@ join : join '&&' equality  {printf("join->join && equality\n");}
      | equality            {printf("join->equality\n");}
      ;
 
-equality : equality '==' rel    {printf("equality->equality == rel\n");}
-	 | equality '!=' rel    {printf("equality->equality != rel\n");}
+equality : equality EQ rel      {printf("equality->equality == rel\n");}
+	 | equality NE rel      {printf("equality->equality != rel\n");}
 	 | rel                  {printf("equality->rel\n");}
 	 ;
 
-rel : expr '<' expr        {printf("rel->expr < expr\n");}
-    | expr '<=' expr       {printf("rel->expr <= expr\n");}
-    | expr '>=' expr       {printf("rel->expr >= expr\n");}
-    | expr '>' expr        {printf("rel->expr > expr\n");}
+rel : expr LT expr         {printf("rel->expr < expr\n");}
+    | expr LE expr         {printf("rel->expr <= expr\n");}
+    | expr GE expr         {printf("rel->expr >= expr\n");}
+    | expr GT expr         {printf("rel->expr > expr\n");}
     | expr                 {printf("rel->expr\n");}
     ;
 
@@ -100,4 +118,22 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");}
        | TRUE              {printf("factor->TRUE\n");}
        | FALSE             {printf("factor->FALSE\n");}
        ;
+
+
+
+%%
+
+#include "lex.yy.c"
+
+/*
+int main () {
+  yyin = stdin;
+
+  sym_table = hash_table_init(cmp_string,string_hasher);
+  num_table = hash_table_init(cmp_double,double_hasher);
+  real_table = hash_table_init(cmp_double,double_hasher);
+
+   
+}
+*/
 
