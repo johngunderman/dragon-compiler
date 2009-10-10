@@ -11,28 +11,6 @@
   #include <string.h>
   #include "hash_tables.h"  
 
-  /*
-    LT, LE, EQ, NE, GT, GE,
-    IF, THEN, ELSE, ID, NUMBER, RELOP
-  */
-
-  #define LT            1
-  #define LE            2
-  #define EQ            3
-  #define NE            4
-  #define GT            5
-  #define GE            6
-  #define IF            7
-  #define THEN          8
-  #define ELSE          9
-  #define ID            10
-  #define NUMBER        11
-  #define RELOP         12
-  #define BASIC         13
-  #define WHILE         14
-  #define TRUE          15
-  #define FALSE         16
-  #define REAL          17
   #define EXIT          18
   
   void *yyval;
