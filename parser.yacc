@@ -39,6 +39,9 @@
 %token NE
 %token EQ
 
+
+%start program
+
 %% /* Grammar rules and actions follow.  */
 
 
@@ -60,10 +63,10 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");}
      ;
 
 stmts : stmts stmt          {printf("stmts->stmts stmt\n");}
-      | /* empty */         {printf("stmts-> empty\n");}
+      | /* empty */         {printf("stmts->empty\n");}
       ;
 
-stmt : loc '=' bool ':'                 {printf("stmt->loc = bool\n");}
+stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");}
      | IF '(' bool ')' stmt             {printf("stmt->IF ( bool ) stmt\n");}
      | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmst ELSE stmt\n");}
      | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
@@ -125,7 +128,13 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");}
 
 #include "lex.yy.c"
 
-/*
+void yyerror (char const * s) {
+  fprintf (stderr, "%s\n", s);
+  hash_pretty_print_s_i(sym_table);
+}
+
+
+
 int main () {
   yyin = stdin;
 
@@ -133,7 +142,6 @@ int main () {
   num_table = hash_table_init(cmp_double,double_hasher);
   real_table = hash_table_init(cmp_double,double_hasher);
 
+  yyparse();
    
 }
-*/
-

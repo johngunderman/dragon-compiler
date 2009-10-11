@@ -106,6 +106,7 @@ double	 {yyval = (void *)&double_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
 {number} {yyval = (void *) install_num(); return (NUM);}
 {real}   {yyval = (void *) install_real(); return (REAL);}
+\n|.     {yyval = NULL; return yytext[0];}
 
 %%
 
