@@ -16,17 +16,11 @@ linked_lists.o : linked_lists.h
 
 hash_tables.o : linked_lists.h hash_tables.h
 
-clean : 
-	rm -rf $(name) $(objects) lex.yy.c *.o *~
-
-lexer : hash_tables.o linked_lists.o
-	lex lexer.lex
-	gcc -c lex.yy.c
-	gcc -o lexer lex.yy.o hash_tables.o linked_lists.o
-
 parser : hash_tables.o linked_lists.o
 	lex lexer.lex
 	yacc parser.yacc
 	gcc y.tab.c hash_tables.o linked_lists.o
 
+clean : 
+	rm -rf $(name) $(objects) lex.yy.c *.o *~
 

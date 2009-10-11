@@ -95,6 +95,7 @@ real    {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 
 {ws}     {/* no action and no return */}
 if       {yyval = NULL; return(IF);}
+do       {yyval = NULL; return(DO);}
 while    {yyval = NULL; return(WHILE);}
 break    {yyval = NULL; return(BREAK);}
 then     {yyval = NULL; return(THEN);}
@@ -106,6 +107,12 @@ double	 {yyval = (void *)&double_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
 {number} {yyval = (void *) install_num(); return (NUM);}
 {real}   {yyval = (void *) install_real(); return (REAL);}
+\<       {yyval = NULL; return(LT);}
+>        {yyval = NULL; return(GT);}
+\<=      {yyval = NULL; return(LE);}
+>=       {yyval = NULL; return(GE);}
+==       {yyval = NULL; return(EQ);}
+!=       {yyval = NULL; return(NE);}
 \n|.     {yyval = NULL; return yytext[0];}
 
 %%

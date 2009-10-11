@@ -68,7 +68,7 @@ stmts : stmts stmt          {printf("stmts->stmts stmt\n");}
 
 stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");}
      | IF '(' bool ')' stmt             {printf("stmt->IF ( bool ) stmt\n");}
-     | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmst ELSE stmt\n");}
+     | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");}
      | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
      | DO stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");}
      | BREAK ';'                        {printf("stmt->BREAK ;\n");}
