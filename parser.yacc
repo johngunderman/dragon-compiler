@@ -18,6 +18,8 @@
   } id_type_t;
 
 
+  id_type_t *current_decl = NULL;
+
 %}
 
 
@@ -66,11 +68,27 @@ decls : decls decl          {printf("decls->decls decl\n");}
       | /* empty */         {printf("decls->empty\n");}
       ;
 
-decl : type ID ';'          {printf("decl-> type ID\n");}
+decl : type ID ';'          {printf("decl-> type ID\n");
+                             /* save the type as the value of ID  */
+			    }
      ; 	     
 
-type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");}
-     | BASIC                {printf("type-> BASIC\n");}
+type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
+                             struct id_type_t *temp =  malloc(sizeof(id_type_t));
+			     temp->size = current_decl->size + 1;
+			     temp->type = current_decl->type;
+			     temp->dimension = *(int*) $3;
+			     temp->subsize = current_decl;
+			     current_decl = temp;
+			     printf("HAI!\n");
+                            }
+     | BASIC                {printf("type-> BASIC\n");
+                             current_decl = malloc(sizeof(id_type_t));
+			     current_decl->type = $1;
+			     current_decl->size = 0;
+			     current_decl->dimension = 0;
+			     current_decl->subsize = NULL;
+			    }
      ;
 
 stmts : stmts stmt          {printf("stmts->stmts stmt\n");}

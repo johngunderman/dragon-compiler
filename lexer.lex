@@ -11,7 +11,7 @@
   #include <string.h>
   #include "hash_tables.h"  
 
-   void *yyval;
+  void *yyval;
   hash_table_t *sym_table; 
   hash_table_t *num_table;
   hash_table_t *real_table;
@@ -94,28 +94,30 @@ real    {digit}+(\.{digit}+)?(E[+-]?{digit}+)?
 %%
 
 {ws}     {/* no action and no return */}
-if       {yyval = NULL; return(IF);}
-do       {yyval = NULL; return(DO);}
-while    {yyval = NULL; return(WHILE);}
-break    {yyval = NULL; return(BREAK);}
-then     {yyval = NULL; return(THEN);}
-else     {yyval = NULL; return(ELSE);}
+if       {return(IF);}
+do       {return(DO);}
+while    {return(WHILE);}
+break    {return(BREAK);}
+then     {return(THEN);}
+else     {return(ELSE);}
 true     {yyval = &true_var; return(TRUE);}
 false    {yyval = &false_var; return(FALSE);}
 int	 {yyval = (void *)&int_var; return(BASIC);}
 double	 {yyval = (void *)&double_var; return(BASIC);}
 {id}     {yyval = (void *) install_id(); return(ID);}
-{number} {yyval = (void *) install_num(); return (NUM);}
-{real}   {yyval = (void *) install_real(); return (REAL);}
-\<       {yyval = NULL; return(LT);}
->        {yyval = NULL; return(GT);}
-\<=      {yyval = NULL; return(LE);}
->=       {yyval = NULL; return(GE);}
-==       {yyval = NULL; return(EQ);}
-!=       {yyval = NULL; return(NE);}
-&&       {yyval = NULL; return(AND);}
-\|\|     {yyval = NULL; return(OR);}
-\n|.     {yyval = NULL; return yytext[0];}
+{number} {int *a = malloc(sizeof(int)); *a = (int) atof(yytext);
+          yyval = a; return (NUM);}
+{real}   {double *a = malloc(sizeof(double)); *a = (double) atof(yytext);
+          yyval = a; return (REAL);}
+\<       {return(LT);}
+>        {return(GT);}
+\<=      {return(LE);}
+>=       {return(GE);}
+==       {return(EQ);}
+!=       {return(NE);}
+&&       {return(AND);}
+\|\|     {return(OR);}
+\n|.     {return yytext[0];}
 
 %%
 
