@@ -138,6 +138,7 @@ void *list_search (list_head_t *head, void *key) {
 /* 
    De-allocates the list head as well as all of the list entries.
  */
+//TODO: THIS IS BROKEN!!!!
 void list_delete (list_head_t *head) {
   list_entry_t *current = head->list;
   list_entry_t *next;

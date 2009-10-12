@@ -19,8 +19,8 @@ hash_tables.o : linked_lists.h hash_tables.h
 parser : hash_tables.o linked_lists.o
 	lex lexer.lex
 	yacc parser.yacc
-	gcc y.tab.c hash_tables.o linked_lists.o
+	gcc y.tab.c hash_tables.o linked_lists.o -o parser
 
 clean : 
-	rm -rf $(name) $(objects) lex.yy.c *.o *~
+	rm -rf $(name) $(objects) lex.yy.c *.o *~ y.tab.c
 

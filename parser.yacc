@@ -5,10 +5,19 @@
 %{
   #include <stdio.h>
   
-#define YYSTYPE void *
-
+  #define YYSTYPE void *
+  
   int yylex (void);
   void yyerror (char const *);
+  
+  typedef struct id_type_t {
+    void *type;
+    unsigned int dimension;
+    unsigned int size;
+    struct id_type_t *subsize;
+  } id_type_t;
+
+
 %}
 
 
@@ -38,9 +47,11 @@
 %token LE
 %token NE
 %token EQ
+%token AND
+%token OR
 
 
-%start program
+ //%start program
 
 %% /* Grammar rules and actions follow.  */
 
@@ -56,7 +67,7 @@ decls : decls decl          {printf("decls->decls decl\n");}
       ;
 
 decl : type ID ';'          {printf("decl-> type ID\n");}
-     ;
+     ; 	     
 
 type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");}
      | BASIC                {printf("type-> BASIC\n");}
@@ -79,12 +90,12 @@ loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");}
     | ID                   {printf("loc->ID\n");}
     ;
 
-bool : bool '||' join      {printf("bool->bool || join\n");}
-     | join                {printf("bool->join\n");}
+bool : bool OR join      {printf("bool->bool || join\n");}
+     | join              {printf("bool->join\n");}
      ;
 
-join : join '&&' equality  {printf("join->join && equality\n");}
-     | equality            {printf("join->equality\n");}
+join : join AND equality  {printf("join->join && equality\n");}
+     | equality           {printf("join->equality\n");}
      ;
 
 equality : equality EQ rel      {printf("equality->equality == rel\n");}
@@ -113,7 +124,7 @@ urnary : '!' urnary        {printf("urnary-> ! urnary\n");}
        | '-' urnary        {printf("urnary-> - urnary\n");}
        | factor            {printf("urnary->factor\n");}
        ;
-
+				   
 factor : '(' bool ')'      {printf("factor->( bool )\n");}
        | loc               {printf("factor->loc\n");}
        | NUM               {printf("factor->NUM\n");}

@@ -113,6 +113,8 @@ double	 {yyval = (void *)&double_var; return(BASIC);}
 >=       {yyval = NULL; return(GE);}
 ==       {yyval = NULL; return(EQ);}
 !=       {yyval = NULL; return(NE);}
+&&       {yyval = NULL; return(AND);}
+\|\|     {yyval = NULL; return(OR);}
 \n|.     {yyval = NULL; return yytext[0];}
 
 %%
