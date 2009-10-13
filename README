@@ -50,3 +50,236 @@ remember that I'm not either (or I am perfect, but I don't have time
 to spare). I'll get around to adding line number error handling
 at some point, but at least yacc tells you that you have a problem.
 Strategy: Do it right the first time.
+
+
+TEST PROGRAM:
+
+{
+  int i; int j; float v; float x; float[100] a;
+  while (true) {
+    do i = i+1; while(a[i] < v);
+    do j = j-1; while(a[j] > v);
+    if(i >= j) break;
+    x = a[i]; a[i] = a[j]; a[j] = x;
+  }
+}
+
+
+I entered this though, because reading from stdin doesn't like 
+newlines:
+
+
+{int i; int j; float v; float x; float[100] a; while (true) { do i = i+1; while(a[i] < v); do j = j-1; while(a[j] > v); if(i >= j) break; x = a[i]; a[i] = a[j]; a[j] = x;}}
+
+
+OUTPUT:
+
+decls->empty
+type-> BASIC
+decl-> type ID
+decls->decls decl
+type-> BASIC
+decl-> type ID
+decls->decls decl
+type-> BASIC
+decl-> type ID
+decls->decls decl
+type-> BASIC
+decl-> type ID
+decls->decls decl
+type-> BASIC
+type-> type [ NUM ]
+decl-> type ID
+decls->decls decl
+stmts->empty
+factor->TRUE
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+decls->empty
+stmts->empty
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+factor->NUM
+urnary->factor
+term->urnary
+expr->expr + expr
+rel->expr
+equality->rel
+join->equality
+bool->join
+stmt->loc = bool
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+loc-> loc [ bool ]
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr < expr
+equality->rel
+join->equality
+bool->join
+stmt->DO stmt WHILE ( bool ) ;
+stmts->stmts stmt
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+factor->NUM
+urnary->factor
+term->urnary
+expr->expr - expr
+rel->expr
+equality->rel
+join->equality
+bool->join
+stmt->loc = bool
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+loc-> loc [ bool ]
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr > expr
+equality->rel
+join->equality
+bool->join
+stmt->DO stmt WHILE ( bool ) ;
+stmts->stmts stmt
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr >= expr
+equality->rel
+join->equality
+bool->join
+stmt->BREAK ;
+stmt->IF ( bool ) stmt
+stmts->stmts stmt
+loc->ID
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+loc-> loc [ bool ]
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+stmt->loc = bool
+stmts->stmts stmt
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+loc-> loc [ bool ]
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+loc-> loc [ bool ]
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+stmt->loc = bool
+stmts->stmts stmt
+loc->ID
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+loc-> loc [ bool ]
+loc->ID
+factor->loc
+urnary->factor
+term->urnary
+expr->term
+rel->expr
+equality->rel
+join->equality
+bool->join
+stmt->loc = bool
+stmts->stmts stmt
+block->decls stmts
+stmt->block
+stmt->WHILE ( bool ) stmt
+stmts->stmts stmt
+block->decls stmts
+
