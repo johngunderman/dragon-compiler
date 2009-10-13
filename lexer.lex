@@ -11,11 +11,8 @@
   #include <string.h>
   #include "hash_tables.h"  
 
-  void *yyval;
   hash_table_t *sym_table; 
-  hash_table_t *num_table;
-  hash_table_t *real_table;
-
+  
   int int_var = 1;
   int double_var = 2;
 
@@ -23,55 +20,7 @@
   int false_var = 4;
 
 
-/*
-    Function to install the lexeme, whose first character
-    is pointed to by yytext, and whose length is yyleng,
-    into the symbol table and return a pointer thereto.
-*/
-void *install_id () {
-  if (!hash_table_search(sym_table, yytext)) {
-    //TODO: at some point we will be storing something besides
-    // simply a pointer to int_var as the value of the pair.
 
-    // In other news, lex is retarded and decided to use the same
-    // pointer for all the data it stores in yytext.
-    // The result? I overwrite all my data in hash table.
-    // so we need to copy over our string before storing it
-    // to make sure that we dont screw with anything after
-    // the fact. Pointers are so useful, and make it so
-    // easy to shoot myself in the foot... ah well.
-    char *tempstr = malloc (sizeof(char) + strlen(yytext));
-    strcpy (tempstr, yytext);
-    return hash_table_insert(sym_table, (void *)tempstr, &int_var);
-  }
-  return NULL;
-}
-
-
-/*
-    Similar to install_id, but puts numerical constants (ints) into
-    a separate table.
-*/
-void *install_num(){
-  int *num = malloc(sizeof (int));
-  *num = (int) atof(yytext);
-  if (!hash_table_search(num_table, num)) {
-    return hash_table_insert(num_table, num, &int_var);
-  }
-  return NULL;
-}
-
-/* 
-   Similar to install_num, but stores doubles instead of int.
-*/
-void *install_real() {
-  double *real = malloc (sizeof (double));
-  *real = atof(yytext);
-  if (!hash_table_search(real_table, real)) {
-    return hash_table_insert(real_table, real, &double_var);
-  }
-  return NULL;
-}
 
 /* 
    if yywrap returns 1, the parser will terminate when
@@ -100,15 +49,15 @@ while    {return(WHILE);}
 break    {return(BREAK);}
 then     {return(THEN);}
 else     {return(ELSE);}
-true     {yyval = &true_var; return(TRUE);}
-false    {yyval = &false_var; return(FALSE);}
-int	 {yyval = (void *)&int_var; return(BASIC);}
-double	 {yyval = (void *)&double_var; return(BASIC);}
-{id}     {yyval = (void *) install_id(); return(ID);}
+true     {yylval = &true_var; return(TRUE);}
+false    {yylval = &false_var; return(FALSE);}
+int	 {yylval = (void *)&int_var; return(BASIC);}
+double	 {yylval = (void *)&double_var; return(BASIC);}
+{id}     {yylval = yytext; return(ID);}
 {number} {int *a = malloc(sizeof(int)); *a = (int) atof(yytext);
-          yyval = a; return (NUM);}
+          yylval = a; return (NUM);}
 {real}   {double *a = malloc(sizeof(double)); *a = (double) atof(yytext);
-          yyval = a; return (REAL);}
+          yylval = a; return (REAL);}
 \<       {return(LT);}
 >        {return(GT);}
 \<=      {return(LE);}

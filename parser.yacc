@@ -4,21 +4,26 @@
 
 %{
   #include <stdio.h>
+  #include <assert.h>
   
   #define YYSTYPE void *
   
   int yylex (void);
+
   void yyerror (char const *);
-  
+
+    
   typedef struct id_type_t {
-    void *type;
-    unsigned int dimension;
-    unsigned int size;
-    struct id_type_t *subsize;
+    void *type;			/* type of var */
+    unsigned int dimension;	/* vector dimension */
+    unsigned int size;		/* size of last dimension */
+    struct id_type_t *subsize; 	/* struct of previous dimensions */
   } id_type_t;
 
+  void *install_id (char *, struct id_type_t *);
 
-  id_type_t *current_decl = NULL;
+
+
 
 %}
 
@@ -69,25 +74,25 @@ decls : decls decl          {printf("decls->decls decl\n");}
       ;
 
 decl : type ID ';'          {printf("decl-> type ID\n");
-                             /* save the type as the value of ID  */
+                             install_id((char*)$2, (id_type_t*)$1); 
 			    }
      ; 	     
 
 type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
-                             struct id_type_t *temp =  malloc(sizeof(id_type_t));
-			     temp->size = current_decl->size + 1;
-			     temp->type = current_decl->type;
-			     temp->dimension = *(int*) $3;
-			     temp->subsize = current_decl;
-			     current_decl = temp;
-			     printf("HAI!\n");
+                             $$ =  malloc(sizeof(id_type_t));
+			     assert($$ != NULL);
+			     ((id_type_t *)$$)->size = ((id_type_t *)$1)->size + 1;
+			     ((id_type_t *)$$)->type = ((id_type_t *)$1)->type;
+			     ((id_type_t *)$$)->dimension = *(int*) $3;
+			     ((id_type_t *)$$)->subsize = $1;
                             }
      | BASIC                {printf("type-> BASIC\n");
-                             current_decl = malloc(sizeof(id_type_t));
-			     current_decl->type = $1;
-			     current_decl->size = 0;
-			     current_decl->dimension = 0;
-			     current_decl->subsize = NULL;
+                             $$ = malloc(sizeof(id_type_t));
+			     assert($$ != NULL);
+			     ((id_type_t *)$$)->type = $1;
+			     ((id_type_t *)$$)->size = 0;
+			     ((id_type_t *)$$)->dimension = 0;
+			     ((id_type_t *)$$)->subsize = NULL;
 			    }
      ;
 
@@ -157,6 +162,23 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");}
 
 #include "lex.yy.c"
 
+
+/*
+    Function to install a token and corresponding type info
+    into the symbol table and return a pointer thereto.
+    This function makes a copy of the string it is passed,
+    but does not GC the original string. Beware.
+*/
+void *install_id (char *token, id_type_t *type_info) {
+  if (!hash_table_search(sym_table, token)) {
+    char *tempstr = malloc (sizeof(char) + strlen(token));
+    strcpy (tempstr, token);
+    return hash_table_insert(sym_table, (void *)tempstr, type_info);
+  }
+  return NULL;
+}
+
+
 void yyerror (char const * s) {
   fprintf (stderr, "%s\n", s);
   hash_pretty_print_s_i(sym_table);
@@ -168,9 +190,8 @@ int main () {
   yyin = stdin;
 
   sym_table = hash_table_init(cmp_string,string_hasher);
-  num_table = hash_table_init(cmp_double,double_hasher);
-  real_table = hash_table_init(cmp_double,double_hasher);
 
   yyparse();
-   
+
+    
 }
