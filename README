@@ -1,6 +1,6 @@
 This compiler is a project for Case Western Reserve University's 
 EECS 337 course (Compiler Design).
-
+By John Gunderman
 
 The parser is not yet part of the test suite. Not much is, really.
 Anyway, compiling the parser is as easy as a 'make -B parser', and

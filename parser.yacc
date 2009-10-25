@@ -16,8 +16,9 @@
   typedef struct id_type_t {
     void *type;			/* type of var */
     unsigned int dimension;	/* vector dimension */
-    unsigned int size;		/* size of last dimension */
-    struct id_type_t *subsize; 	/* struct of previous dimensions */
+    unsigned int size;		/* size of child dimension */
+    struct id_type_t *subsize; 	/* struct of child dimensions */
+    struct id_type_t *supersize; /* struct of the parent dimensions */
   } id_type_t;
 
   void *install_id (char *, struct id_type_t *);
@@ -85,6 +86,7 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->type = ((id_type_t *)$1)->type;
 			     ((id_type_t *)$$)->dimension = *(int*) $3;
 			     ((id_type_t *)$$)->subsize = $1;
+			     ((id_type_t *)$1)->supersize = $$;
                             }
      | BASIC                {printf("type-> BASIC\n");
                              $$ = malloc(sizeof(id_type_t));
@@ -93,6 +95,7 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->size = 0;
 			     ((id_type_t *)$$)->dimension = 0;
 			     ((id_type_t *)$$)->subsize = NULL;
+			     ((id_type_t *)$$)->supersize = NULL;
 			    }
      ;
 
