@@ -182,11 +182,19 @@ void *install_id (char *token, id_type_t *type_info) {
 }
 
 
-void yyerror (char const * s) {
-  fprintf (stderr, "%s\n", s);
-  hash_pretty_print_s_i(sym_table);
+void print_str (void *str) {
+  printf ("%s", (char *) str);
 }
 
+void print_id_type (void *id) {
+  /*TODO: print out our info on the type here.*/
+}
+
+
+void yyerror (char const * s) {
+  fprintf (stderr, "%s\n", s);
+  hash_pretty_print (sym_table, print_str, print_id_type);
+}
 
 
 int main () {

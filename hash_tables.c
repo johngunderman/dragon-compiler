@@ -40,48 +40,19 @@ int double_hasher (const void *key) {
 
 
 /*
-  Pretty prints the hash table for K:float V:int
+  Pretty prints the hash table *table where *keyp is a function
+  to print the key and *valuep is a function to print the value.
 */
-void hash_pretty_print_d_i (hash_table_t *table){
+void hash_pretty_print (hash_table_t *table, void (*keyp) (void *),
+			void (*valuep) (void *)) {
   size_t i = 0;
   while ( i < table->size) {
     if (table->entries[i] != NULL) {
-      list_pretty_print_d_i(table->entries[i]);
+      list_pretty_print (table->entries[i], *keyp, *valuep);
     }
     i++;
   }
 }
-
-
-/*
-  Pretty prints the hash table for K:string V:int
-*/  
-void hash_pretty_print_s_i (hash_table_t *table){
-  size_t i = 0;
-  while ( i < table->size) {
-    if (table->entries[i] != NULL) {
-      list_pretty_print_s_i(table->entries[i]);
-    }
-    i++;
-  }
-}
-
-/*
-  Pretty prints the hash table for K:int V:int
-*/  
-void hash_pretty_print_i_i (hash_table_t *table){
-  size_t i = 0;
-  while ( i < table->size) {
-    if (table->entries[i] != NULL) {
-      list_pretty_print_i_i(table->entries[i]);
-    }
-    i++;
-  }
-}
-
-
-
-
 
 
 /* 

@@ -33,41 +33,21 @@ int cmp_double (const void *a, const void *b) {
 
 
 /*
-  Pretty prints the linked list for K:double V:int
+  Pretty prints the linked list *head where *keyp is a function
+  to print the key and *valuep is a function to print the value.
 */
-void list_pretty_print_d_i (list_head_t *head) {
+void list_pretty_print (list_head_t *head, void (*keyp) (void *),
+			void (*valuep) (void *)) {
   list_entry_t *current = head->list;
   while (current != NULL) {
-    printf ("%f: %d\n",*(double*)current->key, *(int*)current->value );
+    printf ("Key: ");
+    keyp (current->key);
+    printf ("\nValue: ");
+    valuep (current->value);
+    printf("\n\n");
     current = current->next;
   }
 }
-
-/*
-  Pretty prints the linked list for K:string V:int
-*/
-void list_pretty_print_s_i (list_head_t *head) {
-  list_entry_t *current = head->list;
-  while (current != NULL) {
-    printf ("%s: %i\n",(char*)current->key, *(int*)current->value );
-    current = current->next;
-  }
-}
-
-/*
-  Pretty prints the linked list for K:int V:int
-*/
-void list_pretty_print_i_i (list_head_t *head) {
-  list_entry_t *current = head->list;
-  while (current != NULL) {
-    printf ("%i: %i\n",*(int*)current->key, *(int*)current->value );
-    current = current->next;
-  }
-}
-
-
-
-
 
 
 /* 

@@ -23,11 +23,8 @@ int string_hasher (const void *key);
 
 int double_hasher (const void *key);
 
-void hash_pretty_print_d_i (hash_table_t *table);
-
-void hash_pretty_print_s_i (hash_table_t *table);
-
-void hash_pretty_print_i_i (hash_table_t *table);
+void hash_pretty_print (hash_table_t *table, void (*keyp) (void *),
+			void (*valuep) (void *));
 
 hash_table_t *hash_table_init (int (*cmp) (const void *, const void *), int (*hash) (const void *));
 

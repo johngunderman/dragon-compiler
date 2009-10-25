@@ -21,11 +21,8 @@ int cmp_string (const void *a, const void *b);
 
 int cmp_double (const void *a, const void *b);
 
-void list_pretty_print_d_i (list_head_t *head);
-
-void list_pretty_print_s_i (list_head_t *head);
-
-void list_pretty_print_i_i (list_head_t *head);
+void list_pretty_print (list_head_t *head, void (*keyp) (void *),
+			void (*valuep) (void *));
 
 list_head_t *list_init (int (*cmp) (const void *, const void *));
 
