@@ -12,6 +12,13 @@
 
   void yyerror (char const *);
 
+  int int_var = 1;
+  int double_var = 2;
+  int float_var = 3;
+
+  int true_var = 4;
+  int false_var = 5;
+
     
   typedef struct id_type_t {
     void *type;			/* type of var */
@@ -88,7 +95,7 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->subsize = $1;
 			     ((id_type_t *)$1)->supersize = $$;
                             }
-     | BASIC                {printf("type-> BASIC\n");
+     | BASIC                {printf("type-> BASIC \n");
                              $$ = malloc(sizeof(id_type_t));
 			     assert($$ != NULL);
 			     ((id_type_t *)$$)->type = $1;
@@ -182,6 +189,10 @@ void *install_id (char *token, id_type_t *type_info) {
 }
 
 
+unsigned int sizeofidtype(id_type_t *t) {
+  
+}
+
 
 /* 
    Print out a string. This function is meant to be passed to
@@ -253,7 +264,8 @@ int main () {
   sym_table = hash_table_init(cmp_string,string_hasher);
 
   yyparse();
-
+  
+  printf("\n\n");
   hash_pretty_print (sym_table, print_str, print_id_type);
 
     

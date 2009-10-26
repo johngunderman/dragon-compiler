@@ -13,12 +13,6 @@
 
   hash_table_t *sym_table; 
   
-  int int_var = 1;
-  int double_var = 2;
-  int float_var = 3;
-
-  int true_var = 3;
-  int false_var = 4;
 
 
 
@@ -55,7 +49,7 @@ false    {yylval = &false_var; return(FALSE);}
 int	 {yylval = (void *)&int_var; return(BASIC);}
 double	 {yylval = (void *)&double_var; return(BASIC);}
 float    {yylval = (void *)&float_var; return(BASIC);}
-{id}     {yylval = yytext; return(ID);}
+{id}     {yylval = malloc(sizeof(yytext)); strcpy(yylval, yytext); return(ID);}
 {number} {int *a = malloc(sizeof(int)); *a = (int) atof(yytext);
           yylval = a; return (NUM);}
 {real}   {double *a = malloc(sizeof(double)); *a = (double) atof(yytext);
