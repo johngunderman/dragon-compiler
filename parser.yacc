@@ -182,15 +182,65 @@ void *install_id (char *token, id_type_t *type_info) {
 }
 
 
+
+/* 
+   Print out a string. This function is meant to be passed to
+   hash_pretty_print().
+*/
 void print_str (void *str) {
   printf ("%s", (char *) str);
 }
 
+/*
+  Print out the contents of the id_type
+  of the symbol in the symbol table.
+  This function is meant to be passed
+  to hash_pretty_print();
+*/
 void print_id_type (void *id) {
+  printf("{");
+  switch (*(unsigned int *)((id_type_t *)id)->type) {
+  case 1:
+    printf("&int_var");
+    break;
+  case 2:
+    printf("&double_var");
+    break;
+  case 3:
+    printf("&float_var");
+    break;
+  case 4:
+    printf("&true_var");
+    break;
+  case 5:
+    printf("&false_var");
+    break;
+  default:
+    printf("unknown_type");
+  } 
+  printf(",%d,%d,",
+	 ((id_type_t *)id)->dimension,
+	 ((id_type_t *)id)->size);
+  if (((id_type_t *)id)->subsize == NULL) {
+    printf ("NULL");
+  } else {
+    print_id_type (((id_type_t *)id)->subsize);
+  }
+  /* print out subsize here (as string) */
   /*TODO: print out our info on the type here.*/
+  if (((id_type_t *)id)->supersize == NULL) {
+    printf (",NULL}");
+  } else {
+    printf(",%p}", ((id_type_t *)id)->supersize);
+  }
 }
 
 
+/* 
+   This function is automagically called by yacc/bison
+   when a syntax error is encountered. It also can be
+   called manually to specially handle syntax errors.
+*/
 void yyerror (char const * s) {
   fprintf (stderr, "%s\n", s);
   hash_pretty_print (sym_table, print_str, print_id_type);
@@ -198,11 +248,13 @@ void yyerror (char const * s) {
 
 
 int main () {
-  yyin = stdin;
+  yyin = fopen("test.code", "r");
 
   sym_table = hash_table_init(cmp_string,string_hasher);
 
   yyparse();
+
+  hash_pretty_print (sym_table, print_str, print_id_type);
 
     
 }
