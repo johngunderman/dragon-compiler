@@ -165,6 +165,11 @@ void hash_string_doubles_test () {
 }
 
 
+sizeofidtype_test () {
+  
+}
+
+
 //======//
 // MAIN //
 //======//
