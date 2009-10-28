@@ -8,13 +8,13 @@
 
 #define MAXCODELEN 8192
 
-
+/* TODO: doubles not entirely supported as of yet. */
 typedef struct {
   enum {symbol, int_const, float_const, bool_const, code} type;
   union {
     list_entry_t *entry_ptr;
     int *int_const_ptr;
-    double *double_const_ptr;
+    float *float_const_ptr;
     int *bool_const_ptr;
     quadruple_t *instr_ptr;
   } addr;
