@@ -89,9 +89,9 @@ decl : type ID ';'          {printf("decl-> type ID\n");
 type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
                              $$ =  malloc(sizeof(id_type_t));
 			     assert($$ != NULL);
-			     ((id_type_t *)$$)->size = ((id_type_t *)$1)->size + 1;
+			     ((id_type_t *)$$)->size = *(int*) $3;
 			     ((id_type_t *)$$)->type = ((id_type_t *)$1)->type;
-			     ((id_type_t *)$$)->dimension = *(int*) $3;
+			     ((id_type_t *)$$)->dimension = ((id_type_t *)$1)->dimension + 1; 
 			     ((id_type_t *)$$)->subsize = $1;
 			     ((id_type_t *)$1)->supersize = $$;
                             }

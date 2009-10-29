@@ -38,7 +38,7 @@ void intmdt_code_print(intmdt_addr_t *t) {
     the next empty location in the given intmdt_code_t. Returns 0 on
     error, 1 on success.
 */
-int gen(intmdt_code_t intermediate_code,
+int gen(intmdt_code_t *intermediate_code,
         char *op, intmdt_addr_t *arg1, intmdt_addr_t *arg2,
         intmdt_addr_t *result) {
 

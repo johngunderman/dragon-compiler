@@ -8,7 +8,7 @@
 
 #define MAXCODELEN 8192
 
-/* TODO: doubles not entirely supported as of yet. */
+/* TODO: floats not entirely supported as of yet. */
 typedef struct {
   enum {symbol, int_const, float_const, bool_const, code} type;
   union {
@@ -37,7 +37,7 @@ typedef struct {
 } intmdt_code_t;
 
 
-int gen(intmdt_code_t intermediate_code,
+int gen(intmdt_code_t *intermediate_code,
         char *op, intmdt_addr_t *arg1, intmdt_addr_t *arg2,
         intmdt_addr_t *result);
 
