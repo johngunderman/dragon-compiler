@@ -25,10 +25,32 @@ intmdt_addr_t *newtemp(env_t *top) {
   
   id_type_t *value = malloc (sizeof(id_type_t));
 
-  /* TODO: Do we need to set stuff in value to null? */
+  if (value == NULL) {
+    fprintf(stderr, "Failed to malloc value in newtemp()");
+    exit(1);
+  }
 
+  value->type = NULL;
+  value->dimension = 0;
+  value->size = 0;
+  value->subsize = NULL;
+  value->supersize = NULL;
+  
   sprintf(key, "@%d", temp_num);
-  hash_table_insert (top->table, key, value);  
+  
+  list_entry_t *entry = hash_table_insert (top->table, key, value);
+  
+  intmdt_addr_t *addr = malloc ( sizeof(intmdt_addr_t));
+
+  if (intmdt_addr_t == NULL) {
+    fprintf(stderr, "Failed to malloc intmdt_addr_t in newtemp()");
+    exit(1);
+  }
+
+  addr->type = symbol;
+  addr->entry_ptr = entry;
+  
+  return addr;
   
 }
 
