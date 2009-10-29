@@ -8,6 +8,56 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/*  
+    Creates a new temporary variable and inserts it in the
+    symbol table. Temp vars begin with @. Exits program on failure.
+*/
+intmdt_addr_t *newtemp(env_t *top) {
+  static int temp_num = 0;  	/* the id for the new temp */
+  
+  char *key = malloc (sizeof(char * 15)); /* we assume we shouldn't need
+					   more than 15 characters. */
+  
+  if (key == NULL) {
+    fprintf(stderr, "Failed to malloc key in newtemp()");
+    exit(1);
+  }
+  
+  id_type_t *value = malloc (sizeof(id_type_t));
+
+  /* TODO: Do we need to set stuff in value to null? */
+
+  sprintf(key, "@%d", temp_num);
+  hash_table_insert (top->table, key, value);  
+  
+}
+
+
+/*  
+    This function returns the size of the type passed to it.
+*/
+unsigned int sizeofidtype(id_type_t *t) {
+  if (t->dimension > 0) {
+    return t->size * sizeofidtype(t->subsize);
+  }
+
+  switch (*(unsigned int *)t->type) {
+  case 1:
+    return sizeof(int);
+  case 2:
+    return sizeof(double);
+  case 3:
+    return sizeof(float);
+  case 4:
+    return sizeof(int); //sizeof true set to int
+  case 5:
+    return sizeof(int); //sizeof false set to int 
+  default:
+    fprintf(stderr, "Unrecognized type, could not compute size\n");
+    exit(1);
+  }
+}
+
 
 /*  
     Prints out the contents of the given intmdt_addr_t.

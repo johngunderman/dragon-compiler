@@ -189,29 +189,6 @@ void *install_id (char *token, id_type_t *type_info) {
 }
 
 
-unsigned int sizeofidtype(id_type_t *t) {
-  if (t->dimension > 0) {
-    return t->size * sizeofidtype(t->subsize);
-  }
-
-  switch (*(unsigned int *)t->type) {
-  case 1:
-    return sizeof(int);
-  case 2:
-    return sizeof(double);
-  case 3:
-    return sizeof(float);
-  case 4:
-    return 1; //sizeof true set to 1
-  case 5:
-    return 1; //sizeof false set to 1;
-  default:
-    fprintf(stderr, "Unrecognized type, could not compute size\n");
-    exit(1);
-  }
-}
-
-
 /* 
    Print out a string. This function is meant to be passed to
    hash_pretty_print().
