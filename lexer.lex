@@ -47,7 +47,6 @@ else     {return(ELSE);}
 true     {yylval = &true_var; return(TRUE);}
 false    {yylval = &false_var; return(FALSE);}
 int	 {yylval = (void *)&int_var; return(BASIC);}
-double	 {yylval = (void *)&double_var; return(BASIC);}
 float    {yylval = (void *)&float_var; return(BASIC);}
 {id}     {yylval = malloc(sizeof(yytext)); strcpy(yylval, yytext); return(ID);}
 {number} {int *a = malloc(sizeof(int)); *a = (int) atof(yytext);
