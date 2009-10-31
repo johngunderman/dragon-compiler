@@ -15,6 +15,8 @@
 intmdt_addr_t *newtemp(env_t *top) {
   static int temp_num = 0;  	/* the id for the new temp */
   
+  temp_num++;
+
   char *key = malloc (sizeof(char * 15)); /* we assume we shouldn't need
 					   more than 15 characters. */
   
@@ -132,5 +134,31 @@ int gen(intmdt_code_t *intermediate_code,
   } else { 
     fprintf(stderr, "Error in gen(): overwriting or max limit hit for intmdt_code");
     return(0);
+  }
+}
+
+/* 
+   This function generates code to change types. It effectively
+   is an implicit cast to a larger data size. Returns a 
+   list_entry_t on success, and NULL on failure.
+   
+   It currently only casts to float, because we only have the number
+   types for int and float. support for doubles might be added in the
+   future, but adding other types looks like a pain in the ass
+   considering how many functions would need to be modified.
+*/
+list_entry_t *widen(env_t *top, intmdt_addr_t *a, id_type_t *t) {
+  intmdt_addr_t *temp = newtemp(top);
+  
+  if (a->type == symbol 
+      && a->entry_ptr->value->type == &float_var
+      && t->type == &float_var) {
+    
+    gen (*intermediate_code, "(float)", a, NULL, temp);
+    return temp->entry_ptr;
+  } else {
+    fpritnf (stderr, "An unsupported widen() operation was attempted.\n");
+    return NULL;
+  }
 }
 
