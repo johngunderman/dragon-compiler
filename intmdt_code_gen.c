@@ -21,14 +21,14 @@ intmdt_addr_t *newtemp(env_t *top) {
 					   more than 15 characters. */
   
   if (key == NULL) {
-    fprintf(stderr, "Failed to malloc key in newtemp()");
+    fprintf(stderr, "Failed to malloc key in newtemp()\n");
     exit(1);
   }
   
   id_type_t *value = malloc (sizeof(id_type_t));
 
   if (value == NULL) {
-    fprintf(stderr, "Failed to malloc value in newtemp()");
+    fprintf(stderr, "Failed to malloc value in newtemp()\n");
     exit(1);
   }
 
@@ -45,7 +45,7 @@ intmdt_addr_t *newtemp(env_t *top) {
   intmdt_addr_t *addr = malloc ( sizeof(intmdt_addr_t));
 
   if (intmdt_addr_t == NULL) {
-    fprintf(stderr, "Failed to malloc intmdt_addr_t in newtemp()");
+    fprintf(stderr, "Failed to malloc intmdt_addr_t in newtemp()\n");
     exit(1);
   }
 
@@ -119,7 +119,7 @@ int gen(intmdt_code_t *intermediate_code,
   quadruple_t *instr = malloc(sizeof(quadruple_t));
 
   if (*instr == NULL) {
-    fprintf(stderr, "Error on malloc in gen();");
+    fprintf(stderr, "Error on malloc in gen();\n");
     return(0);
   }
   instr->op = op;
@@ -132,7 +132,7 @@ int gen(intmdt_code_t *intermediate_code,
     n++;
     return(1);
   } else { 
-    fprintf(stderr, "Error in gen(): overwriting or max limit hit for intmdt_code");
+    fprintf(stderr, "Error in gen(): overwriting or max limit hit for intmdt_code\n");
     return(0);
   }
 }

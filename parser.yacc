@@ -110,7 +110,15 @@ stmts : stmts stmt          {printf("stmts->stmts stmt\n");}
       | /* empty */         {printf("stmts->empty\n");}
       ;
 
-stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");}
+stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
+       	       	    			 intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
+					 if (dest == NULL) {
+					    fprintf(stderr,"Error: could not malloc dest in 'loc = bool'");
+					    exit(1);
+					 }
+					 dest->type = symbol;
+					 dest->entry_ptr = $1
+					 gen(code, "=", $3, NULL, dest);}
      | IF '(' bool ')' stmt             {printf("stmt->IF ( bool ) stmt\n");}
      | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");}
      | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
@@ -119,51 +127,130 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");}
      | block                            {printf("stmt->block\n");}
      ;
 
-loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");}
-    | ID                   {printf("loc->ID\n");}
+loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
+      	      	   	    $$ = ((list_entry_t*)$1)->subsize;
+			    /* TODO: figure out what the value of the bool is and pass it */ }
+    | ID                   {printf("loc->ID\n");
+                            list_entry_t *id = hash_table_search(sym_table, $1);
+			    if (id == NULL) {
+			      fprintf(stderr, "Error: symbol '%s' was not previously defined.\n", (char*)$1);
+			      exit(1);
+			    }
+                            $$ = id;}
     ;
 
-bool : bool OR join      {printf("bool->bool || join\n");}
-     | join              {printf("bool->join\n");}
+bool : bool OR join      {printf("bool->bool || join\n");
+       	     	          intmdt_addr_t *temp = newtemp(env);
+			  gen(code, "||", $1, $3, temp);
+			  $$ = temp;}
+     | join              {printf("bool->join\n");
+                          $$ = $1;}
      ;
 
-join : join AND equality  {printf("join->join && equality\n");}
-     | equality           {printf("join->equality\n");}
+join : join AND equality  {printf("join->join && equality\n");
+       	     	           intmdt_addr_t *temp = newtemp(env);
+			   gen(code, "&&", $1, $3, temp);
+			   $$ = temp;}
+     | equality           {printf("join->equality\n");
+                           $$ = $1;}
      ;
 
-equality : equality EQ rel      {printf("equality->equality == rel\n");}
-	 | equality NE rel      {printf("equality->equality != rel\n");}
-	 | rel                  {printf("equality->rel\n");}
+equality : equality EQ rel      {printf("equality->equality == rel\n");
+       	     		         intmdt_addr_t *temp = newtemp(env);
+			    	 gen(code, "==", $1, $3, temp);
+			    	 $$ = temp;}
+	 | equality NE rel      {printf("equality->equality != rel\n");
+       	     		         intmdt_addr_t *temp = newtemp(env);
+			    	 gen(code, "!=", $1, $3, temp);
+			    	 $$ = temp;}
+	 | rel                  {printf("equality->rel\n");
+	                         $$ = $1}
 	 ;
 
-rel : expr LT expr         {printf("rel->expr < expr\n");}
-    | expr LE expr         {printf("rel->expr <= expr\n");}
-    | expr GE expr         {printf("rel->expr >= expr\n");}
-    | expr GT expr         {printf("rel->expr > expr\n");}
-    | expr                 {printf("rel->expr\n");}
+rel : expr LT expr         {printf("rel->expr < expr\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "<=", $1, $3, temp);
+			    $$ = temp;}
+    | expr LE expr         {printf("rel->expr <= expr\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "<", $1, $3, temp);
+			    $$ = temp;}
+    | expr GE expr         {printf("rel->expr >= expr\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, ">=", $1, $3, temp);
+			    $$ = temp;}
+    | expr GT expr         {printf("rel->expr > expr\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, ">", $1, $3, temp);
+			    $$ = temp;}
+    | expr                 {printf("rel->expr\n");
+                            $$ = $1}
     ;
 
-expr : expr '+' term       {printf("expr->expr + expr\n");}
-     | expr '-' term       {printf("expr->expr - expr\n");}
-     | term                {printf("expr->term\n");}
+expr : expr '+' term       {printf("expr->expr + expr\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "+", $1, $3, temp);
+			    $$ = temp;}
+     | expr '-' term       {printf("expr->expr - expr\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "-", $1, $3, temp);
+			    $$ = temp;}
+     | term                {printf("expr->term\n");
+                            $$ = $1}
      ;
 
-term : term '*' urnary     {printf("term->term * urnary\n");}
-     | term '/' urnary     {printf("term->term / urnary\n");}
-     | urnary              {printf("term->urnary\n");}
+term : term '*' urnary     {printf("term->term * urnary\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "*", $1, $3, temp);
+			    $$ = temp;}
+     | term '/' urnary     {printf("term->term / urnary\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "/", $1, $3, temp);
+			    $$ = temp;}
+     | urnary              {printf("term->urnary\n");
+       			    $$ = $1;}
      ;
 
-urnary : '!' urnary        {printf("urnary-> ! urnary\n");}
-       | '-' urnary        {printf("urnary-> - urnary\n");}
-       | factor            {printf("urnary->factor\n");}
+urnary : '!' urnary        {printf("urnary-> ! urnary\n");
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "!", $2, NULL, temp);
+			    $$ = temp;
+			    /* TODO: I think this may need type checking */}
+       | '-' urnary        {printf("urnary-> - urnary\n");
+                            intmdt_addr_t *temp = newtemp(env);
+			    gen(code, "-", $2, NULL, temp);
+			    $$ = temp;}
+       | factor            {printf("urnary->factor\n");
+                            $$ = $1;}
        ;
 				   
-factor : '(' bool ')'      {printf("factor->( bool )\n");}
-       | loc               {printf("factor->loc\n");}
-       | NUM               {printf("factor->NUM\n");}
-       | REAL              {printf("factor->REAL\n");}
-       | TRUE              {printf("factor->TRUE\n");}
-       | FALSE             {printf("factor->FALSE\n");}
+factor : '(' bool ')'      {printf("factor->( bool )\n");
+	                    $$ = $2;}
+       | loc               {printf("factor->loc\n");
+                            intmdt_addr_t *dest = malloc (sizeof(intmdt_code_t));
+			    if (dest == NULL) {
+			      fprintf(stderr,"Error: could not malloc dest in 'loc = bool'");
+			      exit(1);
+			    }
+			    dest->type = symbol;
+			    dest->entry_ptr = $1;
+	                    $$ = dest;}
+       | NUM               {printf("factor->NUM\n");
+                            intmdt_addr_t *temp = newtemp(env);
+	                    temp->entry_ptr->value->type = &int_var;
+	                    $$ = temp;}
+       | REAL              {printf("factor->REAL\n");
+                            intmdt_addr_t *temp = newtemp(env);
+	                    temp->entry_ptr->value->type = &float_var;
+	                    $$ = temp;}
+       | TRUE              {printf("factor->TRUE\n");
+                            intmdt_addr_t *temp = newtemp(env);
+	                    temp->entry_ptr->value->type = &true_var;
+	                    $$ = temp;}
+       | FALSE             {printf("factor->FALSE\n");
+                            intmdt_addr_t *temp = newtemp(env);
+	                    temp->entry_ptr->value->type = &false_var;
+	                    $$ = temp;}
        ;
 
 
