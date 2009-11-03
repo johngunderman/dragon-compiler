@@ -4,41 +4,11 @@ By John Gunderman
 
 The parser is not yet part of the test suite. Not much is, really.
 Anyway, compiling the parser is as easy as a 'make -B parser', and
-running it is as easy as a './parser'. An example session:
+running it is as easy as a './parser'.
 
-------------------
-john@kiwi:~/projects/dragon-compiler(master)$ ./parser 
-{int[10][20] foo;}
-decls->empty
-type-> BASIC
-type-> type [ NUM ]
-type-> type [ NUM ]
-decl-> type ID
-decls->decls decl
-stmts->empty
-block->decls stmts
-{break;} 
-syntax error
-foo;: 134537328
------------------
-
-Note that entering multiple top level {} statements causes the
-parser to barf. I'm not sure why that is, but I guess it's useful
-when it actually comes to writing syntactically correct programs.
-(but {break;} is accepted by the parser if it is the first {}).
-Also, if you encounter a syntax error, you will get a printout of
-the symbol table. I just noticed as I made the example session that
-somehow I'm including the semi-colon as part of the symbol. I'm
-not sure how that happened, but I don't have time to look into it
-right now as I have a math test tomorrow that I need to start 
-studying for...
-
-On that note, you might notice that I was a bit lazy/busy and did not
-print out any info dealing with the data types of symbols. It really
-does work though, but you don't have to take my word for it. 
-The parser is currently set to compile with debug flags, so
-you can drop into gdb and check it out if you want. A breakpoint
-at parser.yacc:87 ought to do the job.
+The test suite can be compiled by running 'make test'. It will create
+the './test_suite' executable, which can then be run. What is and 
+is not covered by the test suite tends to vary.
 
 
 Error Handing:
@@ -50,6 +20,18 @@ remember that I'm not either (or I am perfect, but I don't have time
 to spare). I'll get around to adding line number error handling
 at some point, but at least yacc tells you that you have a problem.
 Strategy: Do it right the first time.
+
+
+NOTE:
+=====
+Type conversion and type checking are virtually non-existent.
+Type-checking might work, but there's not type conversion there
+as of yet. This is mainly due to the fact that the 337 due dates
+almost always correspond with my Chem exams...
+
+One last note, the symbol table currently prints out funky symbols
+for some of the args. I'm not sure what the deal is atm, but I'll
+get it resolved by the next homework.
 
 
 TEST PROGRAM:
@@ -65,29 +47,22 @@ TEST PROGRAM:
 }
 
 
-I entered this though, because reading from stdin doesn't like 
-newlines:
-
-
-{int i; int j; float v; float x; float[100] a; while (true) { do i = i+1; while(a[i] < v); do j = j-1; while(a[j] > v); if(i >= j) break; x = a[i]; a[i] = a[j]; a[j] = x;}}
-
-
 OUTPUT:
 
 decls->empty
-type-> BASIC
+type-> BASIC 
 decl-> type ID
 decls->decls decl
-type-> BASIC
+type-> BASIC 
 decl-> type ID
 decls->decls decl
-type-> BASIC
+type-> BASIC 
 decl-> type ID
 decls->decls decl
-type-> BASIC
+type-> BASIC 
 decl-> type ID
 decls->decls decl
-type-> BASIC
+type-> BASIC 
 type-> type [ NUM ]
 decl-> type ID
 decls->decls decl
@@ -283,3 +258,55 @@ stmt->WHILE ( bool ) stmt
 stmts->stmts stmt
 block->decls stmts
 
+
+Key: @4
+Value: {unknown_type,0,0,NULL,NULL}
+
+Key: @5
+Value: {&int_var,0,0,NULL,NULL}
+
+Key: @6
+Value: {unknown_type,0,0,NULL,NULL}
+
+Key: @7
+Value: {unknown_type,0,0,NULL,NULL}
+
+Key: @8
+Value: {unknown_type,0,0,NULL,NULL}
+
+Key: i
+Value: {&int_var,0,0,NULL,NULL}
+
+Key: j
+Value: {&int_var,0,0,NULL,NULL}
+
+Key: v
+Value: {&float_var,0,0,NULL,NULL}
+
+Key: x
+Value: {&float_var,0,0,NULL,NULL}
+
+Key: @1
+Value: {&true_var,0,0,NULL,NULL}
+
+Key: a
+Value: {&float_var,1,100,{&float_var,0,0,NULL,0x9e4d510},NULL}
+
+Key: @2
+Value: {&int_var,0,0,NULL,NULL}
+
+Key: @3
+Value: {unknown_type,0,0,NULL,NULL}
+
+Intermediate Code:
+Op	Arg1		Arg2		Result
+OP: +	Symbol: 	Symbol: @2	Symbol: @3	
+OP: =	Symbol: @3			Symbol: 	
+OP: <=	Symbol: 	Symbol: 	Symbol: @4	
+OP: -	Symbol: 	Symbol: @5	Symbol: @6	
+OP: =	Symbol: @6			Symbol: 	
+OP: >	Symbol: 	Symbol: 	Symbol: @7	
+OP: >=	Symbol: 	Symbol: 	Symbol: @8	
+OP: =	Symbol: 			Symbol: 	
+OP: =	Symbol: 			Symbol: 	
+OP: =	Symbol: 			Symbol: 	
