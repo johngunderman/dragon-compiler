@@ -2,11 +2,53 @@
     By: John Gunderman
     This file contains function definitions for generation
     of intermediate code.
+
+    NOTE: In order for most of the functions in this file to
+    work properly, the program must initialize the global
+    variables :
+
+    intmdt_code_t *intermediate_code = init_code();
+    env_t *top = init_env();
 */
 
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "intmdt_code_gen.h"
+
+/* Constants for the type of data structures in the language. */
+int int_var = 1;
+int double_var = 2;
+int float_var = 3;
+int true_var = 4;
+int false_var = 5;
+
+
+/* 
+   Initialize the intermediate_code variable for the system.
+*/
+intmdt_code_t *init_code() {
+  intmdt_code_t *temp = malloc( sizeof( intmdt_code_t ));
+  if (temp == NULL) {
+    fprintf(stderr, "Error: failed to malloc intmdt_code_t in init_code()\n");
+    exit(1);
+  }
+  temp->n = 0;
+  return temp;
+}
+
+/* 
+   Initialize the environment variable for the program.
+*/
+env_t *init_env() {
+  env_t *temp = malloc( sizeof(env_t ));
+  if (temp == NULL) {
+    fprintf(stderr, "Error: failed to malloc env_t in init_env()\n");
+    exit(1);
+  }
+  temp->prev = NULL;
+  return temp;
+}
 
 /*  
     Creates a new temporary variable and inserts it in the
@@ -17,7 +59,7 @@ intmdt_addr_t *newtemp(env_t *top) {
   
   temp_num++;
 
-  char *key = malloc (sizeof(char * 15)); /* we assume we shouldn't need
+  char *key = malloc (sizeof(char) * 15); /* we assume we shouldn't need
 					   more than 15 characters. */
   
   if (key == NULL) {
@@ -44,13 +86,13 @@ intmdt_addr_t *newtemp(env_t *top) {
   
   intmdt_addr_t *addr = malloc ( sizeof(intmdt_addr_t));
 
-  if (intmdt_addr_t == NULL) {
+  if (addr == NULL) {
     fprintf(stderr, "Failed to malloc intmdt_addr_t in newtemp()\n");
     exit(1);
   }
 
   addr->type = symbol;
-  addr->entry_ptr = entry;
+  *(addr->addr).entry_ptr = *entry;
   
   return addr;
   
@@ -89,20 +131,19 @@ unsigned int sizeofidtype(id_type_t *t) {
 void intmdt_code_print(intmdt_addr_t *t) {
   switch(t->type){
   case symbol:
-    printf("Symbol: %s\n", t->addr->entry_ptr->key); 
+    printf("Symbol: %s\n", (char*) t->addr.entry_ptr->key); 
     break;
   case int_const:
-    printf("Integer: %d\n", *t->addr->int_const_ptr);
+    printf("Integer: %d\n", *(t->addr).int_const_ptr);
     break;
   case float_const:
-    printf("Float: %f\n", *t->addr->float_const_ptr);
+    printf("Float: %f\n", *(t->addr).float_const_ptr);
     break;
   case bool_const:
-    printf("Bool: %d\n", *t->addr->bool_const_ptr);
+    printf("Bool: %d\n", *(t->addr).bool_const_ptr);
     break;
   case code:
-    printf("Code: &p\n", *t->addr->int_const_ptr);
-    
+    printf("Code: %p\n", (void *) *(t->addr).int_const_ptr);
   }
 }
 
@@ -118,7 +159,7 @@ int gen(intmdt_code_t *intermediate_code,
 
   quadruple_t *instr = malloc(sizeof(quadruple_t));
 
-  if (*instr == NULL) {
+  if (instr == NULL) {
     fprintf(stderr, "Error on malloc in gen();\n");
     return(0);
   }
@@ -127,9 +168,10 @@ int gen(intmdt_code_t *intermediate_code,
   instr->arg2 = arg2;
   instr->result = result;
 
-  if (intermediate_code[n] == NULL && n < MAXCODELEN) {
-    intermediate_code[n] = instr;
-    n++;
+  if (&intermediate_code[intermediate_code->n] == NULL 
+      && intermediate_code->n < MAXCODELEN) {
+    intermediate_code->code[intermediate_code->n] = instr;
+    intermediate_code->n++;
     return(1);
   } else { 
     fprintf(stderr, "Error in gen(): overwriting or max limit hit for intmdt_code\n");
@@ -151,14 +193,58 @@ list_entry_t *widen(env_t *top, intmdt_addr_t *a, id_type_t *t) {
   intmdt_addr_t *temp = newtemp(top);
   
   if (a->type == symbol 
-      && a->entry_ptr->value->type == &float_var
+      && ((id_type_t*)(a->addr.entry_ptr->value))->type == &float_var
       && t->type == &float_var) {
     
-    gen (*intermediate_code, "(float)", a, NULL, temp);
-    return temp->entry_ptr;
+    gen (intermediate_code, "(float)", a, NULL, temp);
+    return &(*(temp->addr).entry_ptr);
   } else {
-    fpritnf (stderr, "An unsupported widen() operation was attempted.\n");
+    fprintf (stderr, "An unsupported widen() operation was attempted.\n");
     return NULL;
   }
 }
 
+
+/*
+  Print out the contents of the id_type
+  of the symbol in the symbol table.
+  This function is meant to be passed
+  to hash_pretty_print();
+*/
+void print_id_type (void *id) {
+  printf("{");
+  switch (*(unsigned int *)((id_type_t *)id)->type) {
+  case 1:
+    printf("&int_var");
+    break;
+  case 2:
+    printf("&double_var");
+    break;
+  case 3:
+    printf("&float_var");
+    break;
+  case 4:
+    printf("&true_var");
+    break;
+  case 5:
+    printf("&false_var");
+    break;
+  default:
+    printf("unknown_type");
+  } 
+  printf(",%d,%d,",
+	 ((id_type_t *)id)->dimension,
+	 ((id_type_t *)id)->size);
+  if (((id_type_t *)id)->subsize == NULL) {
+    printf ("NULL");
+  } else {
+    print_id_type (((id_type_t *)id)->subsize);
+  }
+  /* print out subsize here (as string) */
+  /*TODO: print out our info on the type here.*/
+  if (((id_type_t *)id)->supersize == NULL) {
+    printf (",NULL}");
+  } else {
+    printf(",%p}", (void *) ((id_type_t *)id)->supersize);
+  }
+}

@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include "linked_lists.h"
 #include "hash_tables.h"
+#include "intmdt_code_gen.h"
+
 
 void cmp_string_test () {
   char word1 [] = "eecs";
@@ -165,7 +167,63 @@ void hash_string_doubles_test () {
 }
 
 
-sizeofidtype_test () {
+void sizeofidtype_test () {
+
+  printf ("Testing sizeofidtype function:\n");
+  
+  id_type_t *temp1 = malloc (sizeof(id_type_t));
+  temp1->type = &int_var;
+  temp1->dimension = 0;
+  temp1->size = 0;
+  temp1->subsize = NULL;
+  temp1->supersize = NULL;
+
+  assert(sizeofidtype(temp1) == sizeof(int));
+  printf("Passed 1st test ");
+  print_id_type(temp1);
+  printf("\n");
+  
+
+  id_type_t *temp2 = malloc (sizeof(id_type_t));
+  temp2->type = &float_var;
+  temp2->dimension = 0;
+  temp2->size = 0;
+  temp2->subsize = NULL;
+  temp2->supersize = NULL;
+
+  assert(sizeofidtype(temp2) == sizeof(float));
+  printf("Passed 2nd test ");
+  print_id_type(temp2);
+  printf("\n");
+  
+
+  id_type_t *temp3 = malloc (sizeof(id_type_t));
+  temp3->type = &float_var;
+  temp3->dimension = 1;
+  temp3->size = 10;
+  temp3->subsize = temp2;
+  temp2->supersize = temp3;
+  temp3->supersize = NULL;
+  
+  assert(sizeofidtype(temp3) == 10 * sizeof(float_var));
+  printf("Passed 3rd test ");
+  print_id_type(temp3);
+  printf("\n");
+  
+
+  id_type_t *temp4 = malloc (sizeof(id_type_t));
+  temp4->type = &float_var;
+  temp4->dimension = 2;
+  temp4->size = 50;
+  temp4->subsize = temp3;
+  temp3->supersize = temp4;
+  temp4->supersize = NULL;
+
+  assert(sizeofidtype(temp4) == 50 * 10 * sizeof(float_var));
+  printf("Passed 4th test ");
+  print_id_type(temp4);
+  printf("\n");
+  
   
 }
 
@@ -185,6 +243,8 @@ int main () {
   hash_string_doubles_test();
   printf ("\n");
   hash_doubles_test();
+  printf ("\n");
+  sizeofidtype_test();
   printf ("\n");
   return 0;
 }

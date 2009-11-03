@@ -6,32 +6,18 @@
   #include <stdio.h>
   #include <assert.h>
   
+  #include "intmdt_code_gen.h"
+
   #define YYSTYPE void *
   
   int yylex (void);
 
   void yyerror (char const *);
 
-  int int_var = 1;
-  int double_var = 2;
-  int float_var = 3;
-
-  int true_var = 4;
-  int false_var = 5;
-
     
-  typedef struct id_type_t {
-    void *type;			/* type of var */
-    unsigned int dimension;	/* vector dimension */
-    unsigned int size;		/* size of child dimension */
-    struct id_type_t *subsize; 	/* struct of child dimensions */
-    struct id_type_t *supersize; /* struct of the parent dimensions */
-  } id_type_t;
-
   void *install_id (char *, struct id_type_t *);
 
-
-
+  hash_table_t *sym_table; 
 
 %}
 
@@ -117,7 +103,7 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
 					    exit(1);
 					 }
 					 dest->type = symbol;
-					 dest->entry_ptr = $1
+					 dest->addr.entry_ptr = $1;
 					 gen(code, "=", $3, NULL, dest);}
      | IF '(' bool ')' stmt             {printf("stmt->IF ( bool ) stmt\n");}
      | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");}
@@ -128,7 +114,7 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      ;
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
-      	      	   	    $$ = ((list_entry_t*)$1)->subsize;
+      	      	   	    $$ = ((list_entry_t*)$1)->value->subsize;
 			    /* TODO: figure out what the value of the bool is and pass it */ }
     | ID                   {printf("loc->ID\n");
                             list_entry_t *id = hash_table_search(sym_table, $1);
@@ -284,50 +270,6 @@ void print_str (void *str) {
   printf ("%s", (char *) str);
 }
 
-/*
-  Print out the contents of the id_type
-  of the symbol in the symbol table.
-  This function is meant to be passed
-  to hash_pretty_print();
-*/
-void print_id_type (void *id) {
-  printf("{");
-  switch (*(unsigned int *)((id_type_t *)id)->type) {
-  case 1:
-    printf("&int_var");
-    break;
-  case 2:
-    printf("&double_var");
-    break;
-  case 3:
-    printf("&float_var");
-    break;
-  case 4:
-    printf("&true_var");
-    break;
-  case 5:
-    printf("&false_var");
-    break;
-  default:
-    printf("unknown_type");
-  } 
-  printf(",%d,%d,",
-	 ((id_type_t *)id)->dimension,
-	 ((id_type_t *)id)->size);
-  if (((id_type_t *)id)->subsize == NULL) {
-    printf ("NULL");
-  } else {
-    print_id_type (((id_type_t *)id)->subsize);
-  }
-  /* print out subsize here (as string) */
-  /*TODO: print out our info on the type here.*/
-  if (((id_type_t *)id)->supersize == NULL) {
-    printf (",NULL}");
-  } else {
-    printf(",%p}", ((id_type_t *)id)->supersize);
-  }
-}
-
 
 /* 
    This function is automagically called by yacc/bison
@@ -344,6 +286,10 @@ int main () {
   yyin = fopen("test.code", "r");
 
   sym_table = hash_table_init(cmp_string,string_hasher);
+  
+  intermediate_code = init_code();
+  top = init_env();
+
 
   yyparse();
   

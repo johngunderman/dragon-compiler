@@ -11,9 +11,6 @@
   #include <string.h>
   #include "hash_tables.h"  
 
-  hash_table_t *sym_table; 
-  
-
 
 
 
