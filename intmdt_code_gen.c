@@ -8,7 +8,7 @@
     variables :
 
     intmdt_code_t *intermediate_code = init_code();
-    env_t *top = init_env();
+    env_t *env = init_env();
 */
 
 
@@ -22,6 +22,7 @@ int double_var = 2;
 int float_var = 3;
 int true_var = 4;
 int false_var = 5;
+int unknown_var = 0;
 
 
 /* 
@@ -40,13 +41,14 @@ intmdt_code_t *init_code() {
 /* 
    Initialize the environment variable for the program.
 */
-env_t *init_env() {
+env_t *init_env(hash_table_t *table) {
   env_t *temp = malloc( sizeof(env_t ));
   if (temp == NULL) {
     fprintf(stderr, "Error: failed to malloc env_t in init_env()\n");
     exit(1);
   }
   temp->prev = NULL;
+  temp->table = table;
   return temp;
 }
 
@@ -74,7 +76,7 @@ intmdt_addr_t *newtemp(env_t *top) {
     exit(1);
   }
 
-  value->type = NULL;
+  value->type = &unknown_var;		/* set to 8 for unknown type */
   value->dimension = 0;
   value->size = 0;
   value->subsize = NULL;
@@ -92,7 +94,7 @@ intmdt_addr_t *newtemp(env_t *top) {
   }
 
   addr->type = symbol;
-  *(addr->addr).entry_ptr = *entry;
+  (addr->addr).entry_ptr = entry;
   
   return addr;
   
@@ -125,27 +127,51 @@ unsigned int sizeofidtype(id_type_t *t) {
 }
 
 
+
+
 /*  
     Prints out the contents of the given intmdt_addr_t.
 */
-void intmdt_code_print(intmdt_addr_t *t) {
+void intmdt_addr_print(intmdt_addr_t *t) {
   switch(t->type){
   case symbol:
-    printf("Symbol: %s\n", (char*) t->addr.entry_ptr->key); 
+    printf("Symbol: %s\t", (char*) t->addr.entry_ptr->key); 
     break;
   case int_const:
-    printf("Integer: %d\n", *(t->addr).int_const_ptr);
+    printf("Integer: %d\t", *(t->addr).int_const_ptr);
     break;
   case float_const:
-    printf("Float: %f\n", *(t->addr).float_const_ptr);
+    printf("Float: %f\t", *(t->addr).float_const_ptr);
     break;
   case bool_const:
-    printf("Bool: %d\n", *(t->addr).bool_const_ptr);
+    printf("Bool: %d\t", *(t->addr).bool_const_ptr);
     break;
   case code:
-    printf("Code: %p\n", (void *) *(t->addr).int_const_ptr);
+    printf("Code: %p\t", (void *) *(t->addr).int_const_ptr);
   }
 }
+
+
+/*  
+    
+*/
+void intmdt_code_print(intmdt_code_t *code) {
+  printf("Intermediate Code:\n");
+  printf("Op\tArg1\t\tArg2\t\tResult\n");
+  unsigned int i = 0;
+  while (i < code->n) {
+    printf("OP: %s\t",code->code[i]->op);
+    intmdt_addr_print(code->code[i]->arg1);
+    if (code->code[i]->arg2 != NULL) {
+      intmdt_addr_print(code->code[i]->arg2);
+    } else printf("\t\t");
+    intmdt_addr_print(code->code[i]->result);
+    printf("\n");
+    i++;
+  }
+}
+
+
 
 /*  
     creates a quadruple_t containing the op, arguments, and result
@@ -168,8 +194,7 @@ int gen(intmdt_code_t *intermediate_code,
   instr->arg2 = arg2;
   instr->result = result;
 
-  if (&intermediate_code[intermediate_code->n] == NULL 
-      && intermediate_code->n < MAXCODELEN) {
+  if (intermediate_code->n < MAXCODELEN) {
     intermediate_code->code[intermediate_code->n] = instr;
     intermediate_code->n++;
     return(1);

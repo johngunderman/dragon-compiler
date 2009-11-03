@@ -21,7 +21,7 @@ linked_lists.o : linked_lists.h
 
 hash_tables.o : linked_lists.h hash_tables.h
 
-parser : hash_tables.o linked_lists.o
+parser : hash_tables.o linked_lists.o intmdt_code_gen.o
 	lex lexer.lex
 	yacc parser.yacc
 	gcc -g y.tab.c hash_tables.o \

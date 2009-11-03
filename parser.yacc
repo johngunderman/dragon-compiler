@@ -78,8 +78,9 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->size = *(int*) $3;
 			     ((id_type_t *)$$)->type = ((id_type_t *)$1)->type;
 			     ((id_type_t *)$$)->dimension = ((id_type_t *)$1)->dimension + 1; 
-			     ((id_type_t *)$$)->subsize = $1;
 			     ((id_type_t *)$1)->supersize = $$;
+			     ((id_type_t *)$$)->subsize = $1;
+			     
                             }
      | BASIC                {printf("type-> BASIC \n");
                              $$ = malloc(sizeof(id_type_t));
@@ -104,7 +105,7 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
 					 }
 					 dest->type = symbol;
 					 dest->addr.entry_ptr = $1;
-					 gen(code, "=", $3, NULL, dest);}
+					 gen(intermediate_code, "=", $3, NULL, dest);}
      | IF '(' bool ')' stmt             {printf("stmt->IF ( bool ) stmt\n");}
      | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");}
      | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
@@ -114,7 +115,7 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      ;
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
-      	      	   	    $$ = ((list_entry_t*)$1)->value->subsize;
+                            $$ = ((id_type_t*)$1)->subsize;
 			    /* TODO: figure out what the value of the bool is and pass it */ }
     | ID                   {printf("loc->ID\n");
                             list_entry_t *id = hash_table_search(sym_table, $1);
@@ -127,7 +128,7 @@ loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
 
 bool : bool OR join      {printf("bool->bool || join\n");
        	     	          intmdt_addr_t *temp = newtemp(env);
-			  gen(code, "||", $1, $3, temp);
+			  gen(intermediate_code, "||", $1, $3, temp);
 			  $$ = temp;}
      | join              {printf("bool->join\n");
                           $$ = $1;}
@@ -135,7 +136,7 @@ bool : bool OR join      {printf("bool->bool || join\n");
 
 join : join AND equality  {printf("join->join && equality\n");
        	     	           intmdt_addr_t *temp = newtemp(env);
-			   gen(code, "&&", $1, $3, temp);
+			   gen(intermediate_code, "&&", $1, $3, temp);
 			   $$ = temp;}
      | equality           {printf("join->equality\n");
                            $$ = $1;}
@@ -143,55 +144,55 @@ join : join AND equality  {printf("join->join && equality\n");
 
 equality : equality EQ rel      {printf("equality->equality == rel\n");
        	     		         intmdt_addr_t *temp = newtemp(env);
-			    	 gen(code, "==", $1, $3, temp);
+			    	 gen(intermediate_code, "==", $1, $3, temp);
 			    	 $$ = temp;}
 	 | equality NE rel      {printf("equality->equality != rel\n");
        	     		         intmdt_addr_t *temp = newtemp(env);
-			    	 gen(code, "!=", $1, $3, temp);
+			    	 gen(intermediate_code, "!=", $1, $3, temp);
 			    	 $$ = temp;}
 	 | rel                  {printf("equality->rel\n");
-	                         $$ = $1}
+   $$ = $1;}
 	 ;
 
 rel : expr LT expr         {printf("rel->expr < expr\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "<=", $1, $3, temp);
+			    gen(intermediate_code, "<=", $1, $3, temp);
 			    $$ = temp;}
     | expr LE expr         {printf("rel->expr <= expr\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "<", $1, $3, temp);
+			    gen(intermediate_code, "<", $1, $3, temp);
 			    $$ = temp;}
     | expr GE expr         {printf("rel->expr >= expr\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, ">=", $1, $3, temp);
+			    gen(intermediate_code, ">=", $1, $3, temp);
 			    $$ = temp;}
     | expr GT expr         {printf("rel->expr > expr\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, ">", $1, $3, temp);
+			    gen(intermediate_code, ">", $1, $3, temp);
 			    $$ = temp;}
     | expr                 {printf("rel->expr\n");
-                            $$ = $1}
+                            $$ = $1;}
     ;
 
 expr : expr '+' term       {printf("expr->expr + expr\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "+", $1, $3, temp);
+			    gen(intermediate_code, "+", $1, $3, temp);
 			    $$ = temp;}
      | expr '-' term       {printf("expr->expr - expr\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "-", $1, $3, temp);
+			    gen(intermediate_code, "-", $1, $3, temp);
 			    $$ = temp;}
      | term                {printf("expr->term\n");
-                            $$ = $1}
+                            $$ = $1;}
      ;
 
 term : term '*' urnary     {printf("term->term * urnary\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "*", $1, $3, temp);
+			    gen(intermediate_code, "*", $1, $3, temp);
 			    $$ = temp;}
      | term '/' urnary     {printf("term->term / urnary\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "/", $1, $3, temp);
+			    gen(intermediate_code, "/", $1, $3, temp);
 			    $$ = temp;}
      | urnary              {printf("term->urnary\n");
        			    $$ = $1;}
@@ -199,12 +200,12 @@ term : term '*' urnary     {printf("term->term * urnary\n");
 
 urnary : '!' urnary        {printf("urnary-> ! urnary\n");
        	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "!", $2, NULL, temp);
+			    gen(intermediate_code, "!", $2, NULL, temp);
 			    $$ = temp;
 			    /* TODO: I think this may need type checking */}
        | '-' urnary        {printf("urnary-> - urnary\n");
                             intmdt_addr_t *temp = newtemp(env);
-			    gen(code, "-", $2, NULL, temp);
+			    gen(intermediate_code, "-", $2, NULL, temp);
 			    $$ = temp;}
        | factor            {printf("urnary->factor\n");
                             $$ = $1;}
@@ -219,23 +220,23 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
 			      exit(1);
 			    }
 			    dest->type = symbol;
-			    dest->entry_ptr = $1;
+			    dest->addr.entry_ptr = $1;
 	                    $$ = dest;}
        | NUM               {printf("factor->NUM\n");
                             intmdt_addr_t *temp = newtemp(env);
-	                    temp->entry_ptr->value->type = &int_var;
+	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &int_var;
 	                    $$ = temp;}
        | REAL              {printf("factor->REAL\n");
                             intmdt_addr_t *temp = newtemp(env);
-	                    temp->entry_ptr->value->type = &float_var;
+	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &float_var;
 	                    $$ = temp;}
        | TRUE              {printf("factor->TRUE\n");
                             intmdt_addr_t *temp = newtemp(env);
-	                    temp->entry_ptr->value->type = &true_var;
+	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &true_var;
 	                    $$ = temp;}
        | FALSE             {printf("factor->FALSE\n");
                             intmdt_addr_t *temp = newtemp(env);
-	                    temp->entry_ptr->value->type = &false_var;
+	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &false_var;
 	                    $$ = temp;}
        ;
 
@@ -256,7 +257,7 @@ void *install_id (char *token, id_type_t *type_info) {
   if (!hash_table_search(sym_table, token)) {
     char *tempstr = malloc (sizeof(char) + strlen(token));
     strcpy (tempstr, token);
-    return hash_table_insert(sym_table, (void *)tempstr, type_info);
+    return hash_table_insert(env->table, (void *)tempstr, type_info);
   }
   return NULL;
 }
@@ -288,7 +289,8 @@ int main () {
   sym_table = hash_table_init(cmp_string,string_hasher);
   
   intermediate_code = init_code();
-  top = init_env();
+  env = init_env(sym_table);
+  
 
 
   yyparse();
@@ -296,5 +298,6 @@ int main () {
   printf("\n\n");
   hash_pretty_print (sym_table, print_str, print_id_type);
 
+  intmdt_code_print(intermediate_code);
     
 }

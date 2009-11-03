@@ -16,7 +16,7 @@ int double_var;
 int float_var;
 int true_var;
 int false_var;
-
+int unknown_var;
 
 typedef struct quadruple quadruple_t;
 
@@ -65,7 +65,7 @@ typedef struct id_type_t {
 
 
 intmdt_code_t *intermediate_code;
-env_t *top;
+env_t *env;
 
 
 
@@ -85,3 +85,4 @@ intmdt_code_t *init_code();
 
 env_t *init_env();
 
+void print_intmdt_code(intmdt_code_t *code);

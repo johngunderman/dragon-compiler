@@ -223,8 +223,14 @@ void sizeofidtype_test () {
   printf("Passed 4th test ");
   print_id_type(temp4);
   printf("\n");
+}
+
+void newtemp_test() {
   
-  
+}
+
+void gen_test() {
+
 }
 
 
