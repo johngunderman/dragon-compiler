@@ -64,11 +64,6 @@ typedef struct id_type_t {
 
 
 
-intmdt_code_t *intermediate_code;
-env_t *env;
-
-
-
 int gen(intmdt_code_t *intermediate_code,
         char *op, intmdt_addr_t *arg1, intmdt_addr_t *arg2,
         intmdt_addr_t *result);
@@ -77,7 +72,7 @@ intmdt_addr_t *newtemp(env_t *top);
 
 unsigned int sizeofidtype(id_type_t *t);
 
-list_entry_t *widen(env_t *top, intmdt_addr_t *a, id_type_t *t);
+list_entry_t *widen(intmdt_code_t *code, env_t *top, intmdt_addr_t *a, id_type_t *t);
 
 void print_id_type (void *id);
 

@@ -19,6 +19,9 @@
 
   hash_table_t *sym_table; 
 
+  intmdt_code_t *intermediate_code;
+  env_t *env;
+
 %}
 
 

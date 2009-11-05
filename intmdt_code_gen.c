@@ -3,12 +3,6 @@
     This file contains function definitions for generation
     of intermediate code.
 
-    NOTE: In order for most of the functions in this file to
-    work properly, the program must initialize the global
-    variables :
-
-    intmdt_code_t *intermediate_code = init_code();
-    env_t *env = init_env();
 */
 
 
@@ -219,7 +213,7 @@ int gen(intmdt_code_t *intermediate_code,
    future, but adding other types looks like a pain in the ass
    considering how many functions would need to be modified.
 */
-list_entry_t *widen(intermediate_code* code, env_t *top, intmdt_addr_t *a, id_type_t *t) {
+list_entry_t *widen(intmdt_code_t* code, env_t *top, intmdt_addr_t *a, id_type_t *t) {
   intmdt_addr_t *temp = newtemp(top);
   
   if (a->type == symbol 
