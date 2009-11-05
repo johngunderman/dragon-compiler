@@ -241,7 +241,23 @@ void newtemp_test() {
 }
 
 void gen_test() {
-
+  intmdt_code_t *code = init_code();
+  env_t *env = init_env(hash_table_init(cmp_string, string_hasher));
+  
+  printf("testing gen():\n");
+  intmdt_addr_t *t1 = newtemp(env);
+  intmdt_addr_t *t2 = newtemp(env);
+  intmdt_addr_t *t3 = newtemp(env);
+  intmdt_addr_t *t4 = newtemp(env);
+  intmdt_addr_t *t5 = newtemp(env);
+  gen(code,"-", t1,t2,t3);
+  printf("Passed the first test\n");
+  gen(code,"+", t1,NULL,t2);
+  printf("Passed the second test\n");
+  gen(code,"==", t4,t5,t1);
+  printf("Passed the third test\n");
+  gen(code,"goto",t3,t1,t4);
+  printf("Passed the fourth test\n");
 }
 
 
@@ -264,6 +280,8 @@ int main () {
   sizeofidtype_test();
   printf ("\n");
   newtemp_test();
+  printf ("\n");
+  gen_test();
   printf ("\n");
   return 0;
 }
