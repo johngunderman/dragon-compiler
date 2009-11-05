@@ -228,7 +228,6 @@ list_entry_t *widen(intmdt_code_t* code, env_t *top, intmdt_addr_t *a, id_type_t
     gen (code, "(float)", a, NULL, temp);
     return &(*(temp->addr).entry_ptr);
   } else {
-    fprintf (stderr, "An unsupported widen() operation was attempted.\n");
     return NULL;
   }
 }

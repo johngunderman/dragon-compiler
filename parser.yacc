@@ -243,7 +243,6 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
        | NUM               {printf("factor->NUM\n");
                             intmdt_addr_t *temp = newtemp(env);
 	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &int_var;
-			    print_id_type(((id_type_t*)temp->addr.entry_ptr->value));
 	                    $$ = temp;}
        | REAL              {printf("factor->REAL\n");
                             intmdt_addr_t *temp = newtemp(env);

@@ -7,8 +7,7 @@ Anyway, compiling the parser is as easy as a 'make -B parser', and
 running it is as easy as a './parser'.
 
 The test suite can be compiled by running 'make test'. It will create
-the './test_suite' executable, which can then be run. What is and 
-is not covered by the test suite tends to vary.
+the './test_suite' executable, which can then be run.
 
 
 Error Handing:
@@ -24,14 +23,17 @@ Strategy: Do it right the first time.
 
 NOTE:
 =====
-Type conversion and type checking are virtually non-existent.
-Type-checking might work, but there's not type conversion there
-as of yet. This is mainly due to the fact that the 337 due dates
-almost always correspond with my Chem exams...
+Currently, there is not type checking for booleans being used with
+ints/floats because I am just going to translate all booleans into
+an integer with value 1 or 0, which avoids the issue.
 
-One last note, the symbol table currently prints out funky symbols
-for some of the args. I'm not sure what the deal is atm, but I'll
-get it resolved by the next homework.
+Also, implicit widening does not occur in the given test program,
+but it can be shown to work by adding the line
+
+x = i + v;
+
+to the end of the main block.
+
 
 
 TEST PROGRAM:
