@@ -115,15 +115,20 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      ;
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
-                            $$ = ((id_type_t*)$1)->subsize;
+                            /* Looks gross, but all it does is assign the subsize of the current id_type as the value of the list_entry  */
+                            ((list_entry_t*)$1)->value = ((id_type_t*)((list_entry_t*)$1)->value)->subsize;
+			     $$ = $1;
 			    /* TODO: figure out what the value of the bool is and pass it */ }
     | ID                   {printf("loc->ID\n");
-                            list_entry_t *id = hash_table_search(sym_table, $1);
+                            id_type_t *id = hash_table_search(sym_table, $1);
 			    if (id == NULL) {
 			      fprintf(stderr, "Error: symbol '%s' was not previously defined.\n", (char*)$1);
 			      exit(1);
 			    }
-                            $$ = id;}
+			    list_entry_t *entry = malloc (sizeof(list_entry_t));
+			    entry->key = $1;
+			    entry->value = id;
+                            $$ = entry;}
     ;
 
 bool : bool OR join      {printf("bool->bool || join\n");
@@ -299,5 +304,5 @@ int main () {
   hash_pretty_print (sym_table, print_str, print_id_type);
 
   intmdt_code_print(intermediate_code);
-    
+
 }

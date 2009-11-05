@@ -135,7 +135,7 @@ unsigned int sizeofidtype(id_type_t *t) {
 void intmdt_addr_print(intmdt_addr_t *t) {
   switch(t->type){
   case symbol:
-    printf("Symbol: %s\t", (char*) t->addr.entry_ptr->key); 
+    printf("Symbol: %s\t", (char*) (t->addr).entry_ptr->key);
     break;
   case int_const:
     printf("Integer: %d\t", *(t->addr).int_const_ptr);
@@ -161,12 +161,17 @@ void intmdt_code_print(intmdt_code_t *code) {
   unsigned int i = 0;
   while (i < code->n) {
     printf("OP: %s\t",code->code[i]->op);
+    
     intmdt_addr_print(code->code[i]->arg1);
+    
     if (code->code[i]->arg2 != NULL) {
       intmdt_addr_print(code->code[i]->arg2);
     } else printf("\t\t");
+    
     intmdt_addr_print(code->code[i]->result);
+    
     printf("\n");
+    
     i++;
   }
 }
@@ -214,14 +219,14 @@ int gen(intmdt_code_t *intermediate_code,
    future, but adding other types looks like a pain in the ass
    considering how many functions would need to be modified.
 */
-list_entry_t *widen(env_t *top, intmdt_addr_t *a, id_type_t *t) {
+list_entry_t *widen(intermediate_code* code, env_t *top, intmdt_addr_t *a, id_type_t *t) {
   intmdt_addr_t *temp = newtemp(top);
   
   if (a->type == symbol 
       && ((id_type_t*)(a->addr.entry_ptr->value))->type == &float_var
       && t->type == &float_var) {
     
-    gen (intermediate_code, "(float)", a, NULL, temp);
+    gen (code, "(float)", a, NULL, temp);
     return &(*(temp->addr).entry_ptr);
   } else {
     fprintf (stderr, "An unsupported widen() operation was attempted.\n");
