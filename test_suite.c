@@ -226,9 +226,17 @@ void sizeofidtype_test () {
 }
 
 void newtemp_test() {
-  env_t *env = init_env();
-  intmdt_addr_t *t1 = newtemp(env);
-  intmdt_addr_t *t2 = newtemp(env);
+  env_t *env = init_env(hash_table_init(cmp_string, string_hasher));
+  
+  newtemp(env);
+  printf("Testing newtemp():\n");
+  
+  assert(hash_table_search(env->table, "@1") != NULL);
+  printf("Passed first test\n");
+  
+  intmdt_addr_t *t2 = newtemp(NULL);
+  assert(t2 == NULL);
+  printf("Passed the second test (env = NULL)\n");
   
 }
 
@@ -254,6 +262,8 @@ int main () {
   hash_doubles_test();
   printf ("\n");
   sizeofidtype_test();
+  printf ("\n");
+  newtemp_test();
   printf ("\n");
   return 0;
 }

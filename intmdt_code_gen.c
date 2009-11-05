@@ -48,10 +48,15 @@ env_t *init_env(hash_table_t *table) {
 
 /*  
     Creates a new temporary variable and inserts it in the
-    symbol table. Temp vars begin with @. Exits program on failure.
+    symbol table. Temp vars begin with @. Returns NULL on failure.
 */
 intmdt_addr_t *newtemp(env_t *top) {
   static int temp_num = 0;  	/* the id for the new temp */
+  
+  if (top == NULL || top->table == NULL) {
+    fprintf(stderr, "Attempted to call newtemp with null environment.\n");
+    return NULL;
+  }
   
   temp_num++;
 
@@ -60,14 +65,14 @@ intmdt_addr_t *newtemp(env_t *top) {
   
   if (key == NULL) {
     fprintf(stderr, "Failed to malloc key in newtemp()\n");
-    exit(1);
+    return NULL;
   }
   
   id_type_t *value = malloc (sizeof(id_type_t));
 
   if (value == NULL) {
     fprintf(stderr, "Failed to malloc value in newtemp()\n");
-    exit(1);
+    return NULL;
   }
 
   value->type = &unknown_var;		/* set to 8 for unknown type */
@@ -77,14 +82,14 @@ intmdt_addr_t *newtemp(env_t *top) {
   value->supersize = NULL;
   
   sprintf(key, "@%d", temp_num);
-  
+
   list_entry_t *entry = hash_table_insert (top->table, key, value);
   
   intmdt_addr_t *addr = malloc ( sizeof(intmdt_addr_t));
 
   if (addr == NULL) {
     fprintf(stderr, "Failed to malloc intmdt_addr_t in newtemp()\n");
-    exit(1);
+    return NULL;
   }
 
   addr->type = symbol;
