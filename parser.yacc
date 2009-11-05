@@ -151,30 +151,36 @@ join : join AND equality  {printf("join->join && equality\n");
      ;
 
 equality : equality EQ rel      {printf("equality->equality == rel\n");
-       	     		         intmdt_addr_t *temp = newtemp(env);
+                                 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);     
+  	     		         intmdt_addr_t *temp = newtemp(env);
 			    	 gen(intermediate_code, "==", $1, $3, temp);
 			    	 $$ = temp;}
 	 | equality NE rel      {printf("equality->equality != rel\n");
+                                 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		         intmdt_addr_t *temp = newtemp(env);
 			    	 gen(intermediate_code, "!=", $1, $3, temp);
 			    	 $$ = temp;}
 	 | rel                  {printf("equality->rel\n");
-   $$ = $1;}
+                                 $$ = $1;}
 	 ;
 
 rel : expr LT expr         {printf("rel->expr < expr\n");
-       	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(intermediate_code, "<=", $1, $3, temp);
-			    $$ = temp;}
-    | expr LE expr         {printf("rel->expr <= expr\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "<", $1, $3, temp);
 			    $$ = temp;}
+    | expr LE expr         {printf("rel->expr <= expr\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
+       	     		    intmdt_addr_t *temp = newtemp(env);
+			    gen(intermediate_code, "<=", $1, $3, temp);
+			    $$ = temp;}
     | expr GE expr         {printf("rel->expr >= expr\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, ">=", $1, $3, temp);
 			    $$ = temp;}
     | expr GT expr         {printf("rel->expr > expr\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, ">", $1, $3, temp);
 			    $$ = temp;}
@@ -183,10 +189,12 @@ rel : expr LT expr         {printf("rel->expr < expr\n");
     ;
 
 expr : expr '+' term       {printf("expr->expr + expr\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "+", $1, $3, temp);
 			    $$ = temp;}
      | expr '-' term       {printf("expr->expr - expr\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "-", $1, $3, temp);
 			    $$ = temp;}
@@ -195,10 +203,12 @@ expr : expr '+' term       {printf("expr->expr + expr\n");
      ;
 
 term : term '*' urnary     {printf("term->term * urnary\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "*", $1, $3, temp);
 			    $$ = temp;}
      | term '/' urnary     {printf("term->term / urnary\n");
+                            widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "/", $1, $3, temp);
 			    $$ = temp;}
@@ -233,6 +243,7 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
        | NUM               {printf("factor->NUM\n");
                             intmdt_addr_t *temp = newtemp(env);
 	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &int_var;
+			    print_id_type(((id_type_t*)temp->addr.entry_ptr->value));
 	                    $$ = temp;}
        | REAL              {printf("factor->REAL\n");
                             intmdt_addr_t *temp = newtemp(env);

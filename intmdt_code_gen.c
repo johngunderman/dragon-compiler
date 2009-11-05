@@ -151,7 +151,7 @@ void intmdt_addr_print(intmdt_addr_t *t) {
 */
 void intmdt_code_print(intmdt_code_t *code) {
   printf("Intermediate Code:\n");
-  printf("Op\tArg1\t\tArg2\t\tResult\n");
+  printf("Op\t\tArg1\t\tArg2\t\tResult\n");
   unsigned int i = 0;
   while (i < code->n) {
     printf("OP: %s\t",code->code[i]->op);
@@ -214,12 +214,12 @@ int gen(intmdt_code_t *intermediate_code,
    considering how many functions would need to be modified.
 */
 list_entry_t *widen(intmdt_code_t* code, env_t *top, intmdt_addr_t *a, id_type_t *t) {
-  intmdt_addr_t *temp = newtemp(top);
   
   if (a->type == symbol 
-      && ((id_type_t*)(a->addr.entry_ptr->value))->type == &float_var
+      && ((id_type_t*)(a->addr.entry_ptr->value))->type == &int_var
       && t->type == &float_var) {
-    
+
+    intmdt_addr_t *temp = newtemp(top);
     gen (code, "(float)", a, NULL, temp);
     return &(*(temp->addr).entry_ptr);
   } else {

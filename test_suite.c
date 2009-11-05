@@ -226,6 +226,9 @@ void sizeofidtype_test () {
 }
 
 void newtemp_test() {
+  env_t *env = init_env();
+  intmdt_addr_t *t1 = newtemp(env);
+  intmdt_addr_t *t2 = newtemp(env);
   
 }
 
