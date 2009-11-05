@@ -292,7 +292,7 @@ Key: @1
 Value: {&true_var,0,0,NULL,NULL}
 
 Key: a
-Value: {&float_var,1,100,{&float_var,0,0,NULL,0x9e4d510},NULL}
+Value: {&float_var,1,100,{&float_var,0,0,NULL,0x9b71510},NULL}
 
 Key: @2
 Value: {&int_var,0,0,NULL,NULL}
@@ -301,14 +301,15 @@ Key: @3
 Value: {unknown_type,0,0,NULL,NULL}
 
 Intermediate Code:
-Op	Arg1		Arg2		Result
-OP: +	Symbol: 	Symbol: @2	Symbol: @3	
-OP: =	Symbol: @3			Symbol: 	
-OP: <=	Symbol: 	Symbol: 	Symbol: @4	
-OP: -	Symbol: 	Symbol: @5	Symbol: @6	
-OP: =	Symbol: @6			Symbol: 	
-OP: >	Symbol: 	Symbol: 	Symbol: @7	
-OP: >=	Symbol: 	Symbol: 	Symbol: @8	
-OP: =	Symbol: 			Symbol: 	
-OP: =	Symbol: 			Symbol: 	
-OP: =	Symbol: 			Symbol: 	
+Op		Arg1		Arg2		Result
+OP: +	Symbol: i	Symbol: @2	Symbol: @3	
+OP: =	Symbol: @3			Symbol: i	
+OP: <	Symbol: a	Symbol: v	Symbol: @4	
+OP: -	Symbol: j	Symbol: @5	Symbol: @6	
+OP: =	Symbol: @6			Symbol: j	
+OP: >	Symbol: a	Symbol: v	Symbol: @7	
+OP: >=	Symbol: i	Symbol: j	Symbol: @8	
+OP: =	Symbol: a			Symbol: x	
+OP: =	Symbol: a			Symbol: a	
+OP: =	Symbol: x			Symbol: a
+	
