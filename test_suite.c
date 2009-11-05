@@ -250,13 +250,13 @@ void gen_test() {
   intmdt_addr_t *t3 = newtemp(env);
   intmdt_addr_t *t4 = newtemp(env);
   intmdt_addr_t *t5 = newtemp(env);
-  gen(code,"-", t1,t2,t3);
+  assert( 1 == gen(code,"-", t1,t2,t3));
   printf("Passed the first test\n");
-  gen(code,"+", t1,NULL,t2);
+  assert( 1 == gen(code,"+", t1,NULL,t2));
   printf("Passed the second test\n");
-  gen(code,"==", t4,t5,t1);
+  assert( 1 == gen(code,"==", t4,t5,t1));
   printf("Passed the third test\n");
-  gen(code,"goto",t3,t1,t4);
+  assert( 1 == gen(code,"goto",t3,t1,t4));
   printf("Passed the fourth test\n");
 }
 
