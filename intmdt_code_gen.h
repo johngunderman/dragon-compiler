@@ -48,9 +48,9 @@ typedef struct {
 } intmdt_code_t;
 
 
-typedef struct {
+typedef struct env_t {
   hash_table_t *table;
-  hash_table_t *prev;
+  struct env_t *prev;
 } env_t;
 
 
@@ -81,3 +81,8 @@ intmdt_code_t *init_code();
 env_t *init_env();
 
 void print_intmdt_code(intmdt_code_t *code);
+
+env_t *push_env_table(env_t *env);
+
+env_t *pop_env_table(env_t *env);
+

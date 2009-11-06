@@ -17,8 +17,6 @@
     
   void *install_id (char *, struct id_type_t *);
 
-  hash_table_t *sym_table; 
-
   intmdt_code_t *intermediate_code;
   env_t *env;
 
@@ -123,7 +121,7 @@ loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
 			     $$ = $1;
 			    /* TODO: figure out what the value of the bool is and pass it */ }
     | ID                   {printf("loc->ID\n");
-                            id_type_t *id = hash_table_search(sym_table, $1);
+                            id_type_t *id = hash_table_search(env->table, $1);
 			    if (id == NULL) {
 			      fprintf(stderr, "Error: symbol '%s' was not previously defined.\n", (char*)$1);
 			      exit(1);
@@ -272,7 +270,7 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
     but does not GC the original string. Beware.
 */
 void *install_id (char *token, id_type_t *type_info) {
-  if (!hash_table_search(sym_table, token)) {
+  if (!hash_table_search(env->table, token)) {
     char *tempstr = malloc (sizeof(char) + strlen(token));
     strcpy (tempstr, token);
     return hash_table_insert(env->table, (void *)tempstr, type_info);
@@ -297,24 +295,22 @@ void print_str (void *str) {
 */
 void yyerror (char const * s) {
   fprintf (stderr, "%s\n", s);
-  hash_pretty_print (sym_table, print_str, print_id_type);
+  hash_pretty_print (env->table, print_str, print_id_type);
 }
 
 
 int main () {
   yyin = fopen("test.code", "r");
 
-  sym_table = hash_table_init(cmp_string,string_hasher);
-  
   intermediate_code = init_code();
-  env = init_env(sym_table);
+  env = init_env();
   
 
 
   yyparse();
   
   printf("\n\n");
-  hash_pretty_print (sym_table, print_str, print_id_type);
+  hash_pretty_print (env->table, print_str, print_id_type);
 
   intmdt_code_print(intermediate_code);
 

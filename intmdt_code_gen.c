@@ -35,12 +35,18 @@ intmdt_code_t *init_code() {
 /* 
    Initialize the environment variable for the program.
 */
-env_t *init_env(hash_table_t *table) {
+env_t *init_env() {
   env_t *temp = malloc( sizeof(env_t ));
   if (temp == NULL) {
     fprintf(stderr, "Error: failed to malloc env_t in init_env()\n");
     exit(1);
   }
+
+  hash_table_t *table = hash_table_init(cmp_string, string_hasher);
+  if (table == NULL) {
+    fprintf(stderr, "Error: failed to malloc hash_table_t in init_env()\n");
+  }
+
   temp->prev = NULL;
   temp->table = table;
   return temp;
@@ -275,4 +281,37 @@ void print_id_type (void *id) {
   } else {
     printf(",%p}", (void *) ((id_type_t *)id)->supersize);
   }
+}
+
+/*  
+    Generates and pushes a new symbol table onto the environment.
+    Returns a pointer to the new top of the stack.
+*/
+env_t *push_env_table(env_t *env) {
+  env_t *top = init_env();
+  
+  top->table = hash_table_init(cmp_string ,string_hasher);
+  top->prev = env;
+
+  return top;
+}
+
+/* 
+   Pops the top symbol table off the environment.
+   Returns a pointer to the new top of the stack.
+*/
+env_t *pop_env_table(env_t *env) {
+  if (env == NULL) {
+    fprintf(stderr, "Attempted to pop from a null environment\n");
+    exit(1);
+  }
+
+  hash_table_delete(env->table);
+  
+  env_t *temp = env->prev;
+  
+  free (env);
+  
+  return temp;
+  
 }
