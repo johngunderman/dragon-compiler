@@ -286,6 +286,10 @@ void print_id_type (void *id) {
 /*  
     Generates and pushes a new symbol table onto the environment.
     Returns a pointer to the new top of the stack.
+    
+    NOTE: the given env_t pointer IS NOT changed
+    to point to the new top of the stack. Only the
+    returned pointer points to the new stack top.
 */
 env_t *push_env_table(env_t *env) {
   env_t *top = init_env();
@@ -299,6 +303,10 @@ env_t *push_env_table(env_t *env) {
 /* 
    Pops the top symbol table off the environment.
    Returns a pointer to the new top of the stack.
+   
+   NOTE: the given env_t pointer IS NOT changed
+   to point to the new top of the stack. Only the
+   returned pointer points to the new stack top.
 */
 env_t *pop_env_table(env_t *env) {
   if (env == NULL) {
@@ -315,3 +323,23 @@ env_t *pop_env_table(env_t *env) {
   return temp;
   
 }
+
+
+/* 
+   Print out a string. This function is meant to be passed to
+   hash_pretty_print().
+*/
+void print_str (void *str) {
+  printf ("%s", (char *) str);
+}
+
+
+void print_env(env_t *head) {
+  unsigned int i = 0;
+  while (head != NULL && head->table != NULL) {
+    printf("Environment Table (Top - %d)\n",i);
+    hash_pretty_print (head->table, print_str, print_id_type);
+    head = head->prev;
+  }
+}
+

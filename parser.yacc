@@ -69,6 +69,7 @@ decls : decls decl          {printf("decls->decls decl\n");}
       ;
 
 decl : type ID ';'          {printf("decl-> type ID\n");
+       	       		     /*TODO: check if id has already been declared */
                              install_id((char*)$2, (id_type_t*)$1); 
 			    }
      ; 	     
@@ -112,7 +113,10 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
      | DO stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");}
      | BREAK ';'                        {printf("stmt->BREAK ;\n");}
-     | block                            {printf("stmt->block\n");}
+     | block                            {printf("stmt->block\n");
+					 env = push_env_table(env);
+					 $$ = $1;
+					 env = pop_env_table(env);}
      ;
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
@@ -280,22 +284,12 @@ void *install_id (char *token, id_type_t *type_info) {
 
 
 /* 
-   Print out a string. This function is meant to be passed to
-   hash_pretty_print().
-*/
-void print_str (void *str) {
-  printf ("%s", (char *) str);
-}
-
-
-/* 
    This function is automagically called by yacc/bison
    when a syntax error is encountered. It also can be
    called manually to specially handle syntax errors.
 */
 void yyerror (char const * s) {
   fprintf (stderr, "%s\n", s);
-  hash_pretty_print (env->table, print_str, print_id_type);
 }
 
 
@@ -310,8 +304,10 @@ int main () {
   yyparse();
   
   printf("\n\n");
-  hash_pretty_print (env->table, print_str, print_id_type);
+
+  print_env(env);
 
   intmdt_code_print(intermediate_code);
 
 }
+

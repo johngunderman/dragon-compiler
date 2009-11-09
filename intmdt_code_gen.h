@@ -86,3 +86,5 @@ env_t *push_env_table(env_t *env);
 
 env_t *pop_env_table(env_t *env);
 
+void print_env(env_t *head);
+
