@@ -113,11 +113,15 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
      | DO stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");}
      | BREAK ';'                        {printf("stmt->BREAK ;\n");}
-     | block                            {printf("stmt->block\n");
-					 env = push_env_table(env);
-					 $$ = $1;
-					 env = pop_env_table(env);}
+     | startscope block                 {printf("stmt->block\n");
+                                         printf("\n\nLeaving Scope\n\n");
+                                         env = pop_env_table(env);}
      ;
+
+startscope : /* EMPTY */ {printf("\n\nEntering New Scope\n\n");
+                          env = push_env_table(env);}
+           ;
+
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
                             /* Looks gross, but all it does is assign the subsize of the current id_type as the value of the list_entry  */
