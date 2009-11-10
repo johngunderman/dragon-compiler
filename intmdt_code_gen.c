@@ -343,3 +343,22 @@ void print_env(env_t *head) {
   }
 }
 
+/* 
+   Searches through every symbol table in the environment
+   for a symbol matching the given string. Returns NULL if
+   no symbol is found.
+*/
+id_type_t *env_search(env_t *env, char *str) {
+  id_type_t *result = NULL;
+  
+  while (env != NULL && env->table != NULL) {
+    result = hash_table_search(env->table, str);
+
+    if (result != NULL) {
+      return result;
+    }
+    env = env->prev;
+  }
+  /* Returns NULL if not found */
+  return result;
+}

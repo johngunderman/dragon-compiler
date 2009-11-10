@@ -129,7 +129,7 @@ loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
 			     $$ = $1;
 			    /* TODO: figure out what the value of the bool is and pass it */ }
     | ID                   {printf("loc->ID\n");
-                            id_type_t *id = hash_table_search(env->table, $1);
+                            id_type_t *id = env_search(env, $1);
 			    if (id == NULL) {
 			      fprintf(stderr, "Error: symbol '%s' was not previously defined.\n", (char*)$1);
 			      exit(1);
