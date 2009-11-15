@@ -380,3 +380,28 @@ list_head_t *list_makelist(quadruple_t *instr_ptr) {
   return head;
 }
 
+
+/*  
+    Takes the list, p, of quadruples, and sets the
+    result of all the quadruples to the given quadruple
+    i. Result should be a pointer to the quadruple that
+    the instruction will jump to.
+    Returns 0 on success, 1 on failure.
+*/
+int backpatch(list_head_t *p, quadruple_t *i) {
+  list_entry_t current = p->list;
+  
+  while (current != NULL) {
+    intmdt_addr_t res = malloc(sizeof(intmdt_addr_t));
+    
+    if (res == NULL) {
+      fprintf(stderr, "failed to malloc intmdt_addr_t in backpatch()\n");
+      return 1;
+    }
+    
+    res->type = code;
+    res->addr.instr_ptr = i;
+    
+    ((quadruple_t) current->value)->result = res;
+  }
+}
