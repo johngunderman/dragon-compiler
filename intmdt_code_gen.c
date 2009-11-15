@@ -405,3 +405,24 @@ int backpatch(list_head_t *p, quadruple_t *i) {
     ((quadruple_t) current->value)->result = res;
   }
 }
+
+
+/*  
+    Concatenates the lists pointed to by p1 and p2 and returns
+    the concatenated list.
+*/
+list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
+  
+  list_entry_t current = p1->list;
+  
+  /* Find the end of the first list */
+  while(current->next != NULL) {
+    current = current->next;
+  }
+  
+  current->next = p2.list;
+  
+  free(p2);
+
+  return p1;
+}
