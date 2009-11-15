@@ -362,3 +362,21 @@ id_type_t *env_search(env_t *env, char *str) {
   /* Returns NULL if not found */
   return result;
 }
+
+
+/*  
+    Creates a new list containing only instr_ptr.
+    Returns a pointer to the newly created list.
+    Returns NULL on failure.
+    This function uses the linked_lists functions
+    and structs, but passes NULL for unnecissary 
+    arguments, such as cmp() and *key.
+*/
+list_head_t *list_makelist(quadruple_t *instr_ptr) {
+  list_head_t head =  list_init(NULL);
+
+  list_insert(head, NULL, instr_ptr);
+
+  return head;
+}
+

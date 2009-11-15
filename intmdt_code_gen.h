@@ -6,6 +6,7 @@
 */
 
 #include "hash_tables.h"
+#include "linked_lists.h"
 
 #define MAXCODELEN 8192
 
@@ -17,6 +18,13 @@ int float_var;
 int true_var;
 int false_var;
 int unknown_var;
+
+
+typedef struct {
+        list_head_t *truelist;
+        list_head_t *falselist;
+} boolean_list_t;
+
 
 typedef struct quadruple quadruple_t;
 
