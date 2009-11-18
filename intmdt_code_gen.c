@@ -138,6 +138,12 @@ unsigned int sizeofidtype(id_type_t *t) {
     Prints out the contents of the given intmdt_addr_t.
 */
 void intmdt_addr_print(intmdt_addr_t *t) {
+ 
+  if (t == NULL) {
+    printf("NULL\t");
+    return;
+  }
+  
   switch(t->type){
   case symbol:
     printf("Symbol: %s\t", (char*) (t->addr).entry_ptr->key);
@@ -165,6 +171,7 @@ void intmdt_code_print(intmdt_code_t *code) {
   printf("Op\t\tArg1\t\tArg2\t\tResult\n");
   unsigned int i = 0;
   while (i < code->n) {
+
     printf("OP: %s\t",code->code[i]->op);
     
     intmdt_addr_print(code->code[i]->arg1);
@@ -373,7 +380,7 @@ id_type_t *env_search(env_t *env, char *str) {
     arguments, such as cmp() and *key.
 */
 list_head_t *list_makelist(quadruple_t *instr_ptr) {
-  list_head_t head =  list_init(NULL);
+  list_head_t *head =  list_init(quadruple_cmp);
 
   list_insert(head, NULL, instr_ptr);
 
@@ -389,10 +396,10 @@ list_head_t *list_makelist(quadruple_t *instr_ptr) {
     Returns 0 on success, 1 on failure.
 */
 int backpatch(list_head_t *p, quadruple_t *i) {
-  list_entry_t current = p->list;
+  list_entry_t *current = p->list;
   
   while (current != NULL) {
-    intmdt_addr_t res = malloc(sizeof(intmdt_addr_t));
+    intmdt_addr_t *res = malloc(sizeof(intmdt_addr_t));
     
     if (res == NULL) {
       fprintf(stderr, "failed to malloc intmdt_addr_t in backpatch()\n");
@@ -402,8 +409,9 @@ int backpatch(list_head_t *p, quadruple_t *i) {
     res->type = code;
     res->addr.instr_ptr = i;
     
-    ((quadruple_t) current->value)->result = res;
+    ((quadruple_t*) current->value)->result = res;
   }
+  return 0;
 }
 
 
@@ -413,16 +421,25 @@ int backpatch(list_head_t *p, quadruple_t *i) {
 */
 list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
   
-  list_entry_t current = p1->list;
+  list_entry_t *current = p1->list;
   
   /* Find the end of the first list */
   while(current->next != NULL) {
     current = current->next;
   }
   
-  current->next = p2.list;
+  current->next = p2->list;
   
   free(p2);
 
   return p1;
+}
+
+
+/* 
+   Does absolutely nothing. Only exists so we can
+   use it as *cmp and not have list_init complain.
+*/
+int quadruple_cmp(const void *key, const void *value){
+  return (key == value);
 }

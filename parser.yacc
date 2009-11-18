@@ -140,56 +140,116 @@ loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
                             $$ = entry;}
     ;
 
-bool : bool OR join      {printf("bool->bool || join\n");
-       	     	          intmdt_addr_t *temp = newtemp(env);
-			  gen(intermediate_code, "||", $1, $3, temp);
-			  $$ = temp;}
-     | join              {printf("bool->join\n");
-                          $$ = $1;}
+bool : bool OR nextinstr join      {printf("bool->bool || join\n");
+       	     	                    boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    	     if (list == NULL) {
+			      	       fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      	       exit(1);
+			    	     }
+				     backpatch( ((boolean_list_t*) $1)->truelist, intermediate_code->code[(int) $3]);
+				     intmdt_addr_t *temp = newtemp(env);
+			   	     gen(intermediate_code, "||", $1, $3, temp);
+			   	     $$ = temp;}
+     | join                        {printf("bool->join\n");
+                                    $$ = $1;}
      ;
 
-join : join AND equality  {printf("join->join && equality\n");
-       	     	           intmdt_addr_t *temp = newtemp(env);
-			   gen(intermediate_code, "&&", $1, $3, temp);
-			   $$ = temp;}
-     | equality           {printf("join->equality\n");
-                           $$ = $1;}
+join : join AND nextinstr equality  {printf("join->join && equality\n");
+       	     	          	     boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    	     if (list == NULL) {
+			      	       fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      	       exit(1);
+			    	     }
+				     backpatch( ((boolean_list_t*) $1)->truelist, intermediate_code->code[(int) $3]);
+				     intmdt_addr_t *temp = newtemp(env);
+			   	     gen(intermediate_code, "&&", $1, $3, temp);
+			   	     $$ = temp;}
+     | equality           	    {printf("join->equality\n");
+                           	     $$ = $1;}
      ;
 
 equality : equality EQ rel      {printf("equality->equality == rel\n");
-                                 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);     
-  	     		         intmdt_addr_t *temp = newtemp(env);
+                                 boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    	 if (list == NULL) {
+			      	   fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      	   exit(1);
+			    	 }
+                            	 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
+       	     		   	 intmdt_addr_t *temp = newtemp(env);
 			    	 gen(intermediate_code, "==", $1, $3, temp);
-			    	 $$ = temp;}
+			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 $$ = list;}
 	 | equality NE rel      {printf("equality->equality != rel\n");
-                                 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
-       	     		         intmdt_addr_t *temp = newtemp(env);
+                                 boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    	 if (list == NULL) {
+			      	   fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      	   exit(1);
+			    	 }
+                            	 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
+       	     		   	 intmdt_addr_t *temp = newtemp(env);
 			    	 gen(intermediate_code, "!=", $1, $3, temp);
-			    	 $$ = temp;}
+			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 $$ = list;}
 	 | rel                  {printf("equality->rel\n");
                                  $$ = $1;}
 	 ;
 
 rel : expr LT expr         {printf("rel->expr < expr\n");
+      	      		    boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "<", $1, $3, temp);
-			    $$ = temp;}
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    $$ = list;}
     | expr LE expr         {printf("rel->expr <= expr\n");
+                            boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "<=", $1, $3, temp);
-			    $$ = temp;}
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    $$ = list;}
     | expr GE expr         {printf("rel->expr >= expr\n");
+                            boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, ">=", $1, $3, temp);
-			    $$ = temp;}
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    $$ = list;}
     | expr GT expr         {printf("rel->expr > expr\n");
+                            boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, ">", $1, $3, temp);
-			    $$ = temp;}
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    $$ = list;}
     | expr                 {printf("rel->expr\n");
                             $$ = $1;}
     ;
@@ -223,10 +283,15 @@ term : term '*' urnary     {printf("term->term * urnary\n");
      ;
 
 urnary : '!' urnary        {printf("urnary-> ! urnary\n");
-       	     		    intmdt_addr_t *temp = newtemp(env);
-			    gen(intermediate_code, "!", $2, NULL, temp);
-			    $$ = temp;
-			    /* TODO: I think this may need type checking */}
+       	     		    boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
+			    list->truelist = ((boolean_list_t*)$2)->falselist;
+			    list->falselist = ((boolean_list_t*)$2)->truelist;
+			    $$ = list;}
+			    /* TODO: I think this may need type checking */
        | '-' urnary        {printf("urnary-> - urnary\n");
                             intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "-", $2, NULL, temp);
@@ -255,14 +320,33 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
 	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &float_var;
 	                    $$ = temp;}
        | TRUE              {printf("factor->TRUE\n");
-                            intmdt_addr_t *temp = newtemp(env);
-	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &true_var;
-	                    $$ = temp;}
+                            boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
+			    /* Generate a goto statement with no destination,
+			       then pass it into a list for backpatching. */
+			    gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->falselist = NULL;
+	                    $$ = list;}
        | FALSE             {printf("factor->FALSE\n");
-                            intmdt_addr_t *temp = newtemp(env);
-	                    ((id_type_t*)temp->addr.entry_ptr->value)->type = &false_var;
-	                    $$ = temp;}
+			    boolean_list_t *list = malloc(sizeof(boolean_list_t));
+   			    if (list == NULL) {
+			      fprintf(stderr, "malloc of boolean_list_t failed!\n");
+			      exit(1);
+			    }
+			    /* Generate a goto statement with no destination,
+			       then pass it into a list for backpatching. */
+			    gen(intermediate_code, "goto", NULL, NULL, NULL);
+			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->truelist = NULL;
+	                    $$ = list;}
        ;
+
+nextinstr : /* empty */    {printf("getting next instruction...\n");
+                            $$ = (void *) intermediate_code->n + 1;}
 
 
 

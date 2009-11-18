@@ -36,7 +36,7 @@ typedef struct {
     int *int_const_ptr;
     float *float_const_ptr;
     int *bool_const_ptr;
-    struct quadruple_t *instr_ptr;
+    quadruple_t *instr_ptr;
   } addr;
 } intmdt_addr_t;
 
