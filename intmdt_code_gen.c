@@ -140,7 +140,7 @@ unsigned int sizeofidtype(id_type_t *t) {
 void intmdt_addr_print(intmdt_addr_t *t) {
  
   if (t == NULL) {
-    printf("NULL\t\t");
+    printf("\t\t");
     return;
   }
   
@@ -250,7 +250,7 @@ list_entry_t *widen(intmdt_code_t* code, env_t *top, intmdt_addr_t *a, id_type_t
   to hash_pretty_print();
 */
 void print_id_type (void *id) {
-  printf("{");
+  printf("{loc=%d, ", ((id_type_t*)id)->location);
   switch (*(unsigned int *)((id_type_t *)id)->type) {
   case 1:
     printf("&int_var");
