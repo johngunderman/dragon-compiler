@@ -83,7 +83,7 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->dimension = ((id_type_t *)$1)->dimension + 1; 
 			     ((id_type_t *)$1)->supersize = $$;
 			     ((id_type_t *)$$)->subsize = $1;
-			     //((id_type_t *)$$)->location = sizeofenv(env);
+			     ((id_type_t *)$$)->location = sizeofenv(env);
 			     
                             }
      | BASIC                {printf("type-> BASIC \n");
@@ -94,12 +94,18 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->dimension = 0;
 			     ((id_type_t *)$$)->subsize = NULL;
 			     ((id_type_t *)$$)->supersize = NULL;
-			     //((id_type_t *)$$)->location = sizeofenv(env);
+			     ((id_type_t *)$$)->location = sizeofenv(env);
 			    }
      ;
 
-stmts : stmts stmt          {printf("stmts->stmts stmt\n");}
-      | /* empty */         {printf("stmts->empty\n");}
+stmts : stmts m stmt          {printf("stmts->stmts stmt\n");
+      	      		       if ($1 != NULL) {
+			     	 backpatch($1, intermediate_code->code[(int) $2]);
+			       }
+			       $$ = $3;
+			       }
+      | /* empty */         {printf("stmts->empty\n");
+                             $$ = NULL;}
       ;
 
 stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
@@ -110,28 +116,34 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
 					 }
 					 dest->type = symbol;
 					 dest->addr.entry_ptr = $1;
-					 gen(intermediate_code, "=", $3, NULL, dest);}
+					 gen(intermediate_code, "=", $3, NULL, dest);
+					 $$ = NULL;}
      | IF '(' bool ')' m stmt             {printf("stmt->IF ( bool ) stmt\n");
        	      	       		 	   backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
-       					   }//$$ = list_merge(((boolean_list_t*) $3)->falselist, $6);}
-     | IF '(' bool ')' m nonterm ELSE m stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");
-       	      	       		       	        backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
-					        backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
-					       //boolean_list_t *temp = list_merge($6, $7);
-					       }//$$ =  list_merge(temp, $10);}
+       					   $$ = list_merge(((boolean_list_t*) $3)->falselist, $6);}
+     | IF '(' bool ')' m nonterm ELSE m stmt   {//printf("stmt->IF ( bool ) stmts ELSE stmt\n");
+       	      	       	 	      	        //backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
+       						//backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
+       					        //list_head_t *temp = list_merge($6, $7);
+       					        }//$$ =  list_merge(temp, $10);}
      | WHILE m '(' bool ')' m stmt          {printf("stmt->WHILE ( bool ) stmt\n");
-       	     	      	  		   //backpatch($7, intermediate_code->code[(int) $2]);
+                                           //backpatch($7, intermediate_code->code[(int) $2]);
 					   backpatch(((boolean_list_t*)$4)->truelist, intermediate_code->code[(int) $6]);
 					   $$ = ((boolean_list_t*)$4)->falselist;
 					   intmdt_addr_t *tmp = malloc(sizeof(intmdt_addr_t));
 					   tmp->type = code;
 					   tmp->addr.instr_ptr = intermediate_code->code[(int) $2];
-					   gen(intermediate_code, "goto", NULL, NULL, tmp); }
-     | BREAK ';'                        {printf("stmt->BREAK ;\n");
-       	     				 gen(intermediate_code, "goto", NULL, NULL, NULL);}
+					   gen(intermediate_code, "goto", NULL, NULL, tmp);}
+     | DO m stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");
+       	       	     	      	  	   backpatch(((boolean_list_t*) $6)->truelist, intermediate_code->code[(int) $2]);
+					   $$ = ((boolean_list_t*) $6)->falselist;}
+     | m BREAK ';'                        {printf("stmt->BREAK ;\n");
+       	     				   gen(intermediate_code, "goto", NULL, NULL, NULL);
+                                           $$ = list_makelist(intermediate_code->code[(int) $1]);}
      | startscope block                 {printf("stmt->block\n");
                                          printf("\n\nLeaving Scope\n\n");
-                                         env = pop_env_table(env);}
+                                         env = pop_env_table(env);
+					 $$ = $2;}
      ;
 
 startscope : /* EMPTY */ {printf("\n\nEntering New Scope\n\n");
