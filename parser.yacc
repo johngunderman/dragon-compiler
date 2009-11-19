@@ -20,6 +20,7 @@
   intmdt_code_t *intermediate_code;
   env_t *env;
 
+
 %}
 
 
@@ -82,6 +83,7 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->dimension = ((id_type_t *)$1)->dimension + 1; 
 			     ((id_type_t *)$1)->supersize = $$;
 			     ((id_type_t *)$$)->subsize = $1;
+			     //((id_type_t *)$$)->location = sizeofenv(env);
 			     
                             }
      | BASIC                {printf("type-> BASIC \n");
@@ -92,6 +94,7 @@ type : type '[' NUM ']'     {printf("type-> type [ NUM ]\n");
 			     ((id_type_t *)$$)->dimension = 0;
 			     ((id_type_t *)$$)->subsize = NULL;
 			     ((id_type_t *)$$)->supersize = NULL;
+			     //((id_type_t *)$$)->location = sizeofenv(env);
 			    }
      ;
 

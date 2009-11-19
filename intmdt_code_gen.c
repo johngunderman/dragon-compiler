@@ -442,3 +442,28 @@ list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
 int quadruple_cmp(const void *key, const void *value){
   return (key == value);
 }
+
+
+/* 
+   Calculates the size of the given environment. All of it, not just
+   the top environment. Everything. It just iterates over everything
+   and adds it all up. it could make things slow if we use it a lot
+   but atm speed is not the primary concern.
+*/
+unsigned int sizeofenv(env_t *env) {
+  unsigned int size = 0;
+  
+  while (env != NULL) {
+    for (unsigned int i = 0; i < env->table->size; i++) {
+      if (env->table->entries[i] != NULL) {
+	list_entry_t *current =  env->table->entries[i]->list;
+	while(current != NULL ) {
+	  size += sizeofidtype((id_type_t *) current->value);
+	  current = current->next;
+	}
+      }
+    }
+    env = env->prev;
+  }
+  return size;
+}

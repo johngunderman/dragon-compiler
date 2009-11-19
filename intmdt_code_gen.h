@@ -68,6 +68,7 @@ typedef struct id_type_t {
   unsigned int size;		/* size of child dimension */
   struct id_type_t *subsize; 	/* struct of child dimensions */
   struct id_type_t *supersize; /* struct of the parent dimensions */
+  unsigned int location;
 } id_type_t;
 
 
@@ -98,6 +99,7 @@ void print_env(env_t *head);
 
 id_type_t *env_search(env_t *env, char *str);
 
+unsigned int sizeofenv(env_t *env);
 
 /*===================================*/
 /* Truelist and Falselist Functions: */
