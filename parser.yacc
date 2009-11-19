@@ -124,7 +124,6 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
 					   tmp->type = code;
 					   tmp->addr.instr_ptr = intermediate_code->code[(int) $2];
 					   gen(intermediate_code, "goto", NULL, NULL, tmp); }
-     | DO stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");}
      | BREAK ';'                        {printf("stmt->BREAK ;\n");
        	     				 gen(intermediate_code, "goto", NULL, NULL, NULL);}
      | startscope block                 {printf("stmt->block\n");
