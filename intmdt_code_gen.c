@@ -171,7 +171,6 @@ void intmdt_code_print(intmdt_code_t *code) {
   printf("Op\tArg1\t\tArg2\t\tResult\n");
   unsigned int i = 0;
   while (i < code->n) {
-
     printf("%s\t",code->code[i]->op);
     
     intmdt_addr_print(code->code[i]->arg1);

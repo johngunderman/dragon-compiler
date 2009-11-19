@@ -29,7 +29,7 @@
    is to shift, and this is what we want, so we don't have
    to worry about it.
 */
-%expect 1
+
 
 %token NUM
 %token BASIC
@@ -111,16 +111,19 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      | IF '(' bool ')' m stmt             {printf("stmt->IF ( bool ) stmt\n");
        	      	       		 	   backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
        					   }//$$ = list_merge(((boolean_list_t*) $3)->falselist, $6);}
-     | IF '(' bool ')' m stmt n ELSE m stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");
-       	      	       		      	       backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
-					       backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
+     | IF '(' bool ')' m nonterm ELSE m stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");
+       	      	       		       	        backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
+					        backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
 					       //boolean_list_t *temp = list_merge($6, $7);
 					       }//$$ =  list_merge(temp, $10);}
      | WHILE m '(' bool ')' m stmt          {printf("stmt->WHILE ( bool ) stmt\n");
        	     	      	  		   //backpatch($7, intermediate_code->code[(int) $2]);
 					   backpatch(((boolean_list_t*)$4)->truelist, intermediate_code->code[(int) $6]);
 					   $$ = ((boolean_list_t*)$4)->falselist;
-					   gen(intermediate_code, "goto", NULL, NULL, intermediate_code->code[(int) $2]); }
+					   intmdt_addr_t *tmp = malloc(sizeof(intmdt_addr_t));
+					   tmp->type = code;
+					   tmp->addr.instr_ptr = intermediate_code->code[(int) $2];
+					   gen(intermediate_code, "goto", NULL, NULL, tmp); }
      | DO stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");}
      | BREAK ';'                        {printf("stmt->BREAK ;\n");
        	     				 gen(intermediate_code, "goto", NULL, NULL, NULL);}
@@ -133,10 +136,12 @@ startscope : /* EMPTY */ {printf("\n\nEntering New Scope\n\n");
                           env = push_env_table(env);}
            ;
 
-n : /* EMPTY */ {printf("I should be doing stuff right now...");
+
+nonterm : /* EMPTY */ {printf("I should be doing stuff right now...\n");
        	     	 gen(intermediate_code, "goto", NULL, NULL, NULL);
 		 $$ = list_makelist(intermediate_code->code[intermediate_code->n - 1]);}
   ;
+
 
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
@@ -169,6 +174,8 @@ bool : bool OR m join      {printf("bool->bool || join\n");
      | join                        {printf("bool->join\n");
                                     $$ = $1;}
      ;
+
+
 
 join : join AND m equality  {printf("join->join && equality\n");
        	     	          	     boolean_list_t *list = malloc(sizeof(boolean_list_t));
