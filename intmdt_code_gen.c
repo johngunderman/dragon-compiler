@@ -140,7 +140,7 @@ unsigned int sizeofidtype(id_type_t *t) {
 void intmdt_addr_print(intmdt_addr_t *t) {
  
   if (t == NULL) {
-    printf("NULL\t");
+    printf("NULL\t\t");
     return;
   }
   
@@ -168,18 +168,16 @@ void intmdt_addr_print(intmdt_addr_t *t) {
 */
 void intmdt_code_print(intmdt_code_t *code) {
   printf("Intermediate Code:\n");
-  printf("Op\t\tArg1\t\tArg2\t\tResult\n");
+  printf("Op\tArg1\t\tArg2\t\tResult\n");
   unsigned int i = 0;
   while (i < code->n) {
 
-    printf("OP: %s\t",code->code[i]->op);
+    printf("%s\t",code->code[i]->op);
     
     intmdt_addr_print(code->code[i]->arg1);
     
-    if (code->code[i]->arg2 != NULL) {
-      intmdt_addr_print(code->code[i]->arg2);
-    } else printf("\t\t");
-    
+    intmdt_addr_print(code->code[i]->arg2);
+
     intmdt_addr_print(code->code[i]->result);
     
     printf("\n");
@@ -320,8 +318,9 @@ env_t *pop_env_table(env_t *env) {
     fprintf(stderr, "Attempted to pop from a null environment\n");
     exit(1);
   }
-
-  hash_table_delete(env->table);
+  /* TODO: free our table, but we don't do that quite yet, because
+   we still want the references to stuff in the table.*/
+  //hash_table_delete(env->table);
   
   env_t *temp = env->prev;
   
@@ -410,6 +409,7 @@ int backpatch(list_head_t *p, quadruple_t *i) {
     res->addr.instr_ptr = i;
     
     ((quadruple_t*) current->value)->result = res;
+    current = current->next;
   }
   return 0;
 }

@@ -108,11 +108,22 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
 					 dest->type = symbol;
 					 dest->addr.entry_ptr = $1;
 					 gen(intermediate_code, "=", $3, NULL, dest);}
-     | IF '(' bool ')' stmt             {printf("stmt->IF ( bool ) stmt\n");}
-     | IF '(' bool ')' stmt ELSE stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");}
-     | WHILE '(' bool ')' stmt          {printf("stmt->WHILE ( bool ) stmt\n");}
+     | IF '(' bool ')' m stmt             {printf("stmt->IF ( bool ) stmt\n");
+       	      	       		 	   backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
+       					   }//$$ = list_merge(((boolean_list_t*) $3)->falselist, $6);}
+     | IF '(' bool ')' m stmt n ELSE m stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");
+       	      	       		      	       backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
+					       backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
+					       //boolean_list_t *temp = list_merge($6, $7);
+					       }//$$ =  list_merge(temp, $10);}
+     | WHILE m '(' bool ')' m stmt          {printf("stmt->WHILE ( bool ) stmt\n");
+       	     	      	  		   //backpatch($7, intermediate_code->code[(int) $2]);
+					   backpatch(((boolean_list_t*)$4)->truelist, intermediate_code->code[(int) $6]);
+					   $$ = ((boolean_list_t*)$4)->falselist;
+					   gen(intermediate_code, "goto", NULL, NULL, intermediate_code->code[(int) $2]); }
      | DO stmt WHILE '(' bool ')' ';'   {printf("stmt->DO stmt WHILE ( bool ) ;\n");}
-     | BREAK ';'                        {printf("stmt->BREAK ;\n");}
+     | BREAK ';'                        {printf("stmt->BREAK ;\n");
+       	     				 gen(intermediate_code, "goto", NULL, NULL, NULL);}
      | startscope block                 {printf("stmt->block\n");
                                          printf("\n\nLeaving Scope\n\n");
                                          env = pop_env_table(env);}
@@ -121,6 +132,11 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
 startscope : /* EMPTY */ {printf("\n\nEntering New Scope\n\n");
                           env = push_env_table(env);}
            ;
+
+n : /* EMPTY */ {printf("I should be doing stuff right now...");
+       	     	 gen(intermediate_code, "goto", NULL, NULL, NULL);
+		 $$ = list_makelist(intermediate_code->code[intermediate_code->n - 1]);}
+  ;
 
 
 loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
@@ -140,7 +156,7 @@ loc : loc '[' bool ']'     {printf("loc-> loc [ bool ]\n");
                             $$ = entry;}
     ;
 
-bool : bool OR nextinstr join      {printf("bool->bool || join\n");
+bool : bool OR m join      {printf("bool->bool || join\n");
        	     	                    boolean_list_t *list = malloc(sizeof(boolean_list_t));
    			    	     if (list == NULL) {
 			      	       fprintf(stderr, "malloc of boolean_list_t failed!\n");
@@ -154,7 +170,7 @@ bool : bool OR nextinstr join      {printf("bool->bool || join\n");
                                     $$ = $1;}
      ;
 
-join : join AND nextinstr equality  {printf("join->join && equality\n");
+join : join AND m equality  {printf("join->join && equality\n");
        	     	          	     boolean_list_t *list = malloc(sizeof(boolean_list_t));
    			    	     if (list == NULL) {
 			      	       fprintf(stderr, "malloc of boolean_list_t failed!\n");
@@ -177,9 +193,9 @@ equality : equality EQ rel      {printf("equality->equality == rel\n");
                             	 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		   	 intmdt_addr_t *temp = newtemp(env);
 			    	 gen(intermediate_code, "==", $1, $3, temp);
-			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    	 gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    	 $$ = list;}
 	 | equality NE rel      {printf("equality->equality != rel\n");
                                  boolean_list_t *list = malloc(sizeof(boolean_list_t));
@@ -190,9 +206,9 @@ equality : equality EQ rel      {printf("equality->equality == rel\n");
                             	 widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		   	 intmdt_addr_t *temp = newtemp(env);
 			    	 gen(intermediate_code, "!=", $1, $3, temp);
-			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    	 gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    	 list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    	 list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    	 $$ = list;}
 	 | rel                  {printf("equality->rel\n");
                                  $$ = $1;}
@@ -207,9 +223,9 @@ rel : expr LT expr         {printf("rel->expr < expr\n");
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "<", $1, $3, temp);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    $$ = list;}
     | expr LE expr         {printf("rel->expr <= expr\n");
                             boolean_list_t *list = malloc(sizeof(boolean_list_t));
@@ -220,9 +236,9 @@ rel : expr LT expr         {printf("rel->expr < expr\n");
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, "<=", $1, $3, temp);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    $$ = list;}
     | expr GE expr         {printf("rel->expr >= expr\n");
                             boolean_list_t *list = malloc(sizeof(boolean_list_t));
@@ -233,9 +249,9 @@ rel : expr LT expr         {printf("rel->expr < expr\n");
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, ">=", $1, $3, temp);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    $$ = list;}
     | expr GT expr         {printf("rel->expr > expr\n");
                             boolean_list_t *list = malloc(sizeof(boolean_list_t));
@@ -246,9 +262,9 @@ rel : expr LT expr         {printf("rel->expr < expr\n");
                             widen(intermediate_code, env, $1, ((intmdt_addr_t*) $3)->addr.entry_ptr->value);
        	     		    intmdt_addr_t *temp = newtemp(env);
 			    gen(intermediate_code, ">", $1, $3, temp);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    $$ = list;}
     | expr                 {printf("rel->expr\n");
                             $$ = $1;}
@@ -328,7 +344,7 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
 			    /* Generate a goto statement with no destination,
 			       then pass it into a list for backpatching. */
 			    gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->truelist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    list->falselist = NULL;
 	                    $$ = list;}
        | FALSE             {printf("factor->FALSE\n");
@@ -340,13 +356,13 @@ factor : '(' bool ')'      {printf("factor->( bool )\n");
 			    /* Generate a goto statement with no destination,
 			       then pass it into a list for backpatching. */
 			    gen(intermediate_code, "goto", NULL, NULL, NULL);
-			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n]);
+			    list->falselist = list_makelist(intermediate_code->code[intermediate_code->n - 1]);
 			    list->truelist = NULL;
 	                    $$ = list;}
        ;
 
-nextinstr : /* empty */    {printf("getting next instruction...\n");
-                            $$ = (void *) intermediate_code->n + 1;}
+m : /* empty */    {printf("getting next instruction...\n");
+                            $$ = (void *) intermediate_code->n;}
 
 
 
