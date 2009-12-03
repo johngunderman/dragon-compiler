@@ -420,8 +420,8 @@ void yyerror (char const * s) {
 
 
 
-int main () {
-  yyin = fopen("test.code", "r");
+int main ( int argc, char *argv[] ) {
+  yyin = fopen(argv[1], "r");
 
   intermediate_code = init_code();
   env = init_env();
