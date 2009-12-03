@@ -30,6 +30,7 @@
    is to shift, and this is what we want, so we don't have
    to worry about it.
 */
+%expect 1
 
 
 %token NUM
@@ -62,7 +63,8 @@
 program : block
 	;
 
-block : '{' decls stmts '}' {printf("block->decls stmts\n");}
+block : '{' decls stmts '}' {printf("block->decls stmts\n");
+      	    	  	     $$ = $3;}
       ;
 
 decls : decls decl          {printf("decls->decls decl\n");}
@@ -121,13 +123,13 @@ stmt : loc '=' bool ';'                 {printf("stmt->loc = bool\n");
      | IF '(' bool ')' m stmt             {printf("stmt->IF ( bool ) stmt\n");
        	      	       		 	   backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
        					   $$ = list_merge(((boolean_list_t*) $3)->falselist, $6);}
-     | IF '(' bool ')' m nonterm ELSE m stmt   {//printf("stmt->IF ( bool ) stmts ELSE stmt\n");
-       	      	       	 	      	        //backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
-       						//backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
-       					        //list_head_t *temp = list_merge($6, $7);
-       					        }//$$ =  list_merge(temp, $10);}
-     | WHILE m '(' bool ')' m stmt          {printf("stmt->WHILE ( bool ) stmt\n");
-                                           //backpatch($7, intermediate_code->code[(int) $2]);
+     | IF '(' bool ')' m stmt ELSE nonterm m stmt   {printf("stmt->IF ( bool ) stmts ELSE stmt\n");
+                                                     backpatch(((boolean_list_t*) $3)->truelist, intermediate_code->code[(int) $5]);
+       						     backpatch(((boolean_list_t*) $3)->falselist, intermediate_code->code[(int) $9]);
+       					             list_head_t *temp = list_merge($6, $8);
+       					             $$ =  list_merge(temp, $10);}
+     | WHILE m '(' bool ')' m stmt        {printf("stmt->WHILE ( bool ) stmt\n");
+                                           backpatch($7, intermediate_code->code[(int) $2]);
 					   backpatch(((boolean_list_t*)$4)->truelist, intermediate_code->code[(int) $6]);
 					   $$ = ((boolean_list_t*)$4)->falselist;
 					   intmdt_addr_t *tmp = malloc(sizeof(intmdt_addr_t));

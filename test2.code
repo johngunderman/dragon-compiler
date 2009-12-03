@@ -1,0 +1,9 @@
+{
+    int a; int b; float c;
+    a = 3;
+    b = 4;
+    if (true) {
+        break;
+        c = a+1;
+    }
+}

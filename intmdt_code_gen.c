@@ -398,6 +398,11 @@ list_head_t *list_makelist(quadruple_t *instr_ptr) {
     Returns 0 on success, 1 on failure.
 */
 int backpatch(list_head_t *p, quadruple_t *i) {
+  
+  if (p == NULL) {
+    fprintf(stderr, "list head passed to backpatch() was NULL.\n");
+    return 0;
+  }
   list_entry_t *current = p->list;
   
   while (current != NULL) {
@@ -424,6 +429,15 @@ int backpatch(list_head_t *p, quadruple_t *i) {
 */
 list_head_t *list_merge(list_head_t *p1, list_head_t *p2) {
   
+  if (p1 == NULL) {
+    fprintf(stderr, "list head p1 passed to list_merge() was NULL.\n");
+    return NULL;
+  }
+  if (p2 == NULL) {
+    fprintf(stderr, "list head p2 passed to list_merge() was NULL.\n");
+    return NULL;
+  }
+
   list_entry_t *current = p1->list;
   
   /* Find the end of the first list */
