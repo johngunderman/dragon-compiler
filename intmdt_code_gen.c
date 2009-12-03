@@ -21,6 +21,8 @@ int unknown_var = 0;
 
 /* 
    Initialize the intermediate_code variable for the system.
+   This function simply mallocs an intmdt_code_t and sets its
+   n value to 0.
 */
 intmdt_code_t *init_code() {
   intmdt_code_t *temp = malloc( sizeof( intmdt_code_t ));
@@ -34,6 +36,8 @@ intmdt_code_t *init_code() {
 
 /* 
    Initialize the environment variable for the program.
+   This function mallocs a new 'env_t' variable and its
+   corresponding 'hash_table_t' (through hash_table_init).
 */
 env_t *init_env() {
   env_t *temp = malloc( sizeof(env_t ));
@@ -466,4 +470,68 @@ unsigned int sizeofenv(env_t *env) {
     env = env->prev;
   }
   return size;
+}
+
+
+
+/* ===========================  */
+/* Structure Freeing Functions  */
+/* ===========================  */
+
+
+void free_env(env_t *env) {
+  env_t *temp;
+  
+  while (env != NULL && env->table != NULL) {
+    temp = env->prev;
+    hash_table_delete(env->table);
+    free(env);
+    env = temp;
+  }
+  env = NULL;
+}
+
+
+void free_quadruple(quadruple_t *quad) {
+  /* if (quad->arg1 != NULL) { */
+/*     free(quad->arg1); */
+/*     quad->arg1 = NULL; */
+/*   } */
+  
+/*   if (quad->arg2 != NULL) { */
+/*     free(quad->arg2); */
+/*     quad->arg2 = NULL; */
+/*   } */
+  
+/*   if (quad->result != NULL) { */
+/*     free(quad->result); */
+/*     quad->result = NULL; */
+/*   } */
+
+  free (quad);
+  quad = NULL;
+}
+
+
+void free_intmdt_code(intmdt_code_t *code) {
+  unsigned int i = 0;
+  while (i < code->n) {
+    free_quadruple(code->code[i]);
+    i++;
+  }
+  free(code);
+  code = NULL;
+}
+
+
+
+void free_id_type(id_type_t *id) {
+  id_type_t *temp;
+
+  while ( id != NULL ) {
+    temp = id->subsize;
+    free (id);
+    id = temp;
+  }
+  id = NULL;
 }

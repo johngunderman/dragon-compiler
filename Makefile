@@ -5,7 +5,7 @@ objects = test_suite.o \
 	intmdt_code_gen.o
 name = linked_lists
 
-CFLAGS = -g -Wall -Wextra -Werror -pedantic -O -g -std=c99
+CFLAGS = -g -Wall -Wextra -Werror -pedantic -O -std=c99
 
 #default : $(objects)
 #	gcc -o $(name) $(objects)

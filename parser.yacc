@@ -418,6 +418,8 @@ void yyerror (char const * s) {
 }
 
 
+
+
 int main () {
   yyin = fopen("test.code", "r");
 
@@ -433,6 +435,11 @@ int main () {
   print_env(env);
 
   intmdt_code_print(intermediate_code);
+
+  free_env(env);
+
+  free_intmdt_code(intermediate_code);
+
 
 }
 

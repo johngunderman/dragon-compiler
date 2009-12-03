@@ -113,3 +113,17 @@ list_head_t *list_merge(list_head_t *p1, list_head_t *p2);
 
 int backpatch(list_head_t *p, quadruple_t *i);
 
+
+
+/* ===========================  */
+/* Structure Freeing Functions  */
+/* ===========================  */
+
+
+void free_env(env_t *env);
+
+void free_quadruple(quadruple_t *quad);
+
+void free_intmdt_code(intmdt_code_t *code);
+
+void free_id_type(id_type_t *id);
