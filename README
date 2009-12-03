@@ -2,51 +2,25 @@ This compiler is a project for Case Western Reserve University's
 EECS 337 course (Compiler Design).
 By John Gunderman
 
-The parser is not yet part of the test suite. Not much is, really.
-Anyway, compiling the parser is as easy as a 'make -B parser', and
-running it is as easy as a './parser'.
+The parser runs seperately from the test suite.
+Compiling the parser is as easy as a 'make -B parser', and
+running it is as easy as a './parser [filename]', where filename
+is one of the three source files in the project. These source files
+are named test.code, test2.code, and test3.code.
 
 The test suite can be compiled by running 'make test'. It will create
 the './test_suite' executable, which can then be run.
 
-
-So, you may notice that, while everything works well in the code for
-Hmwk 5, there is a definite lack of test cases. This is largely due to
-the fact that it is 3 in the morning, and I'm not feeling particularly
-friendly towards test driven development. Fortunately, this code isn't
-going into production, so the lack of test cases won't cause customers
-to suffer. Unfortunately, it may cause my grade to suffer. If so, I 
-would ask that the TA have pity on my soul and only dock me a few points.
-
-If it counts for anything, my output is pretty :D
-
 Locations of variables are printed out when the symbol table gets printed out.
-
-KNOWN PROBLEM:
-If-else statements aren't working due to an unfortunate glitch in bison that I
-don't know how to fix. Yet. Everything else is working like magic though,
-including standard 'if' statements.
-
 
 Error Handing:
 =============
-Error handling in this parser is quite simple: don't type it wrong.
-The parser isn't gonna give you much info besides "syntax error".
-If you're perfect, this isn't a problem, if you aren't perfect,
-remember that I'm not either (or I am perfect, but I don't have time
-to spare). I'll get around to adding line number error handling
-at some point, but at least yacc tells you that you have a problem.
-Strategy: Do it right the first time.
+Error handling is rather primitive, but generally prints a vague message about
+where the error might be.
 
 UPDATE: you may get a segfault if you try and treat a number as a boolean
 or vice versa.
 
-
-NOTE:
-=====
-Currently, there is not type checking for booleans being used with
-ints/floats because I am just going to translate all booleans into
-an integer with value 1 or 0, which avoids the issue.
 
 Also, implicit widening does not occur in the given test program,
 but it can be shown to work by adding the line
@@ -69,6 +43,10 @@ TEST PROGRAM:
   }
 }
 
+Other test programs can be found in the root directory of this project.
+Their output is not included here for the simple reason that it would
+make this document way to long (aka I'm running low on printer paper).
+Feel free to run them and check them out.
 
 OUTPUT:
 
