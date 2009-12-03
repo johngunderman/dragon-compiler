@@ -261,27 +261,47 @@ void gen_test() {
 }
 
 void list_makelist_test() {
-  println("Testing list_makelist()\n");
+  printf("Testing list_makelist()\n");
   assert(list_makelist(malloc(sizeof(quadruple_t))) != NULL);
-  println("Test Passed\n");
+  printf("Test Passed\n");
   
 }
 
 void backpatch_test() {
+  printf("Testing backpatch()\n");
   list_head_t *head = list_makelist(malloc(sizeof(quadruple_t)));
-  list_insert(head, malloc(sizeof(quadruple_t)));
-  list_insert(head, malloc(sizeof(quadruple_t)));
-  /* TODO: FINISH THIS */
+  list_insert(head, NULL, malloc(sizeof(quadruple_t)));
+  list_insert(head, NULL, malloc(sizeof(quadruple_t)));
+  
+  quadruple_t *quad = malloc(sizeof(quadruple_t));
+  backpatch(head, quad);
+  
+  assert(((quadruple_t*)head->list->value)
+	 ->result->addr.instr_ptr == quad);
+  printf("Passed the first test.\n");
+  assert(((quadruple_t*)head->list->next->value)
+	 ->result->addr.instr_ptr == quad);
+  printf("Passed the second test.\n");
 }
 
 
 void list_merge_test() {
+  printf("Testing list_merge()\n");
+  quadruple_t *temp1 = malloc(sizeof(quadruple_t));
+  quadruple_t *temp2 = malloc(sizeof(quadruple_t));
+  
+  list_head_t *head1 = list_makelist(temp1);
+  list_head_t *head2 = list_makelist(temp2);
 
+  list_head_t *head3 = list_merge(head1, head2);
+  
+  assert(head3->list->value == temp1);
+  printf("Passed the first test\n");
+  assert(head3->list->next->value == temp2);
+  printf("Passed the second test\n");
+  
 }
 
-void sizeofenv_test() {
-
-}
 
 //======//
 // MAIN //
@@ -306,6 +326,10 @@ int main () {
   gen_test();
   printf ("\n");
   list_makelist_test();
+  printf("\n");
+  backpatch_test();
+  printf("\n");
+  list_merge_test();
   printf("\n");
   return 0;
 }

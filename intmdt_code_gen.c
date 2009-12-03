@@ -162,7 +162,7 @@ void intmdt_addr_print(intmdt_addr_t *t) {
     printf("Bool: %d\t", *(t->addr).bool_const_ptr);
     break;
   case code:
-    printf("Code: %p\t", (void *) *(t->addr).int_const_ptr);
+    printf("Code: %p\t", (void*) t->addr.instr_ptr);
   }
 }
 
