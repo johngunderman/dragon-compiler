@@ -260,7 +260,28 @@ void gen_test() {
   printf("Passed the fourth test\n");
 }
 
+void list_makelist_test() {
+  println("Testing list_makelist()\n");
+  assert(list_makelist(malloc(sizeof(quadruple_t))) != NULL);
+  println("Test Passed\n");
+  
+}
 
+void backpatch_test() {
+  list_head_t *head = list_makelist(malloc(sizeof(quadruple_t)));
+  list_insert(head, malloc(sizeof(quadruple_t)));
+  list_insert(head, malloc(sizeof(quadruple_t)));
+  /* TODO: FINISH THIS */
+}
+
+
+void list_merge_test() {
+
+}
+
+void sizeofenv_test() {
+
+}
 
 //======//
 // MAIN //
@@ -284,6 +305,8 @@ int main () {
   printf ("\n");
   gen_test();
   printf ("\n");
+  list_makelist_test();
+  printf("\n");
   return 0;
 }
 
